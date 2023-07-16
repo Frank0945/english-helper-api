@@ -1,7 +1,15 @@
+const { Test } = require('../models/test.model');
+
 async function getUserInfo() {
-    return {
-        age: 29,
-        name: "song"
+    try {
+        const test = await Test.findOne({
+            where: {
+                badge_id: 1
+            }
+        });
+        return test;
+    } catch (error) {
+        console.error('Error:', error);
     }
 }
 

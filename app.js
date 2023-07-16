@@ -7,9 +7,10 @@
  * - Add test.model.js
  */
 
-const express = require('express')
-const app = express()
-const port = 3000
+const express = require('express');
+const app = express();
+const port = 3000;
+require('./src/services/db.service');
 const testRouter = require('./src/routes/test.route');
 
 app.get('/', (req, res) => {
@@ -20,5 +21,5 @@ app.use('/test', testRouter);
 
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`Listening on port ${port}`);
 })

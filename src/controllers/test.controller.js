@@ -9,5 +9,5 @@ async function getUserInfo(req, res, next) {
   }
 }
 module.exports = {
-  getUserInfo
+  getUserInfo,
 };

@@ -8,5 +8,5 @@ async function setUserInfo(req, res, next) {
   }
 }
 module.exports = {
-  setUserInfo
+  setUserInfo,
 };

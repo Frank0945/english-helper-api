@@ -4,8 +4,8 @@ async function getUserInfo() {
   try {
     const test = await Test.findOne({
       where: {
-        badge_id: 1
-      }
+        badge_id: 1,
+      },
     });
     return test;
   } catch (error) {
@@ -14,5 +14,5 @@ async function getUserInfo() {
 }
 
 module.exports = {
-  getUserInfo
+  getUserInfo,
 };

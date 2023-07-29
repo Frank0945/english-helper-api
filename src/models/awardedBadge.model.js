@@ -1,37 +1,30 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../services/db.service").sequelize;
 
-const User = sequelize.define(
-  "users",
+const AwardedBadge = sequelize.define(
+  "awarded_badges",
   {
     user_id: {
       type: DataTypes.INET(11),
       primaryKey: true,
       allowNull: false,
     },
-    email: {
-      type: DataTypes.CHAR(100),
+    badge_id: {
+      type: DataTypes.INET(11),
+      primaryKey: true,
       allowNull: false,
     },
-    nickname: {
-      type: DataTypes.CHAR(100),
+    createdAt: {
+      type: DataTypes.DATE,
       allowNull: false,
     },
-    image_url: {
-      type: DataTypes.CHAR(100),
+    updatedAt: {
+      type: DataTypes.DATE,
       allowNull: false,
-    },
-    learning_time: {
-      type: DataTypes.INET(4),
-      allowNull: false,
-      zeroFill: true,
     },
   },
-  {
-    timestamps: false,
-  }
 );
 
 module.exports = {
-  User,
+  AwardedBadge,
 };

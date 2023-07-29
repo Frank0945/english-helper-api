@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const testController = require("../controllers/test.controller");
+const controller = require("../controllers/test.controller");
 
-router.get("/", testController.getUserInfo);
+router.get("/", controller.getUserInfo);
 
 module.exports = router;

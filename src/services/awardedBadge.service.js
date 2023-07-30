@@ -1,5 +1,5 @@
-const { AwardedBadge } = require("../models/awardedBadge.model");
-const { Badges } = require("../models/badges.model");
+const { AwardedBadge } = require("../models/badge/awardedBadge.model");
+const { Badges } = require("../models/badge/badges.model");
 
 async function awardedBadge(data) {
   return await AwardedBadge.create({

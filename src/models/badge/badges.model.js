@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { AwardedBadge } = require("./awardedBadge.model");
-const sequelize = require("../services/db.service").sequelize;
+const sequelize = require("../../services/db.service").sequelize;
 
 const Badges = sequelize.define(
   "badges",

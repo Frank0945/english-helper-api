@@ -1,4 +1,5 @@
 const user = require("../services/user.service");
+const { isMyself } = require("../filters/auth");
 
 async function setUserInfo(req, res, next) {
   try {
@@ -10,6 +11,8 @@ async function setUserInfo(req, res, next) {
 
 async function getUserInfo(req, res, next) {
   try {
+    console.log(req.user_id);
+    // isMyself(req.headers);
     res.json(await user.getUserInfo(req.body));
   } catch (err) {
     next(err);

@@ -5,7 +5,7 @@ const User = sequelize.define(
   "users",
   {
     user_id: {
-      type: DataTypes.INET(11),
+      type: DataTypes.CHAR(30),
       primaryKey: true,
       allowNull: false,
     },
@@ -23,7 +23,7 @@ const User = sequelize.define(
     },
     learning_time: {
       type: DataTypes.INET(4),
-      allowNull: false,
+      allowNull: true,
       zeroFill: true,
     },
   },

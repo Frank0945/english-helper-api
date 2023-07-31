@@ -10,6 +10,20 @@ async function setUserInfo(data) {
   });
 }
 
+async function getUserInfo(data) {
+  return await User.findByPk(data.user_id);
+}
+
+async function setUserNickname(data) {
+  return await User.update({ nickname: data.nickname }, {
+    where: {
+      user_id: data.user_id,
+    },
+  });
+}
+
 module.exports = {
   setUserInfo,
+  getUserInfo,
+  setUserNickname,
 };

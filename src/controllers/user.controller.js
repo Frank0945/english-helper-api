@@ -7,6 +7,25 @@ async function setUserInfo(req, res, next) {
     next(err);
   }
 }
+
+async function getUserInfo(req, res, next) {
+  try {
+    res.json(await user.getUserInfo(req.body));
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function setUserNickname(req, res, next) {
+  try {
+    res.json(await user.setUserNickname(req.body));
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   setUserInfo,
+  getUserInfo,
+  setUserNickname,
 };

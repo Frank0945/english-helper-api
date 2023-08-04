@@ -1,7 +1,6 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const user = require("../user.service");
-const jwt = require("jsonwebtoken");
+const userService = require("../user.service");
 
 require("dotenv").config();
 
@@ -30,20 +29,23 @@ passport.use(
       callbackURL: process.env.HOST_URL + "/auth/google/callback",
     },
     (accessToken, refreshToken, profile, done) => {
-      console.log(accessToken);
-      user.getUserInfo({ user_id: profile.id }).then((result) => {
-        if (result === null) {
-          user.setUserInfo({
-            user_id: profile.id,
-            email: profile.emails[0].value,
-            nickname: profile.displayName,
-            image_url: profile.photos[0].value,
-          });
-        }
-      });
-      const token = jwt.sign({ sub: profile.id }, process.env.JWT_SECRET_KEY);
-      profile.token = token;
-      return done(null, profile);
+      userService
+        .getUserInfo({ user_id: profile.id })
+        .then((result) => {
+          if (result === null) {
+            userService.setUserInfo({
+              user_id: profile.id,
+              email: profile.emails[0].value,
+              nickname: profile.displayName,
+              image_url: profile.photos[0].value,
+            });
+          }
+          const userData = result ? setUserInfo(result) : setUserInfo(profile);
+          return done(null, userData);
+        })
+        .catch((err) => {
+          return done(err);
+        });
     }
   )
 );
@@ -53,10 +55,21 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((user, done) => {
-  console.log(user);
-
+  console.log("deserializeUser", user);
   done(null, user);
 });
+
+const setUserInfo = (profile) => {
+  const userData = {};
+  const fl = !profile.user_id; // is first login
+
+  userData.user_id = fl ? profile.id : profile.user_id;
+  userData.email = fl ? profile.emails[0].value : profile.email;
+  userData.nickname = fl ? profile.displayName : profile.nickname;
+  userData.image_url = fl ? profile.photos[0].value : profile.image_url;
+
+  return userData;
+};
 
 module.exports = {
   passportSetup,

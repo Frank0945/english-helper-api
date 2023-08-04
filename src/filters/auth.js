@@ -1,10 +1,23 @@
-const passport = require("passport");
+function isMyself(req, userId) {
+  return new Promise((resolve, reject) => {
+    if (req.isAuthenticated()) {
+      if (req.session.passport.user.user_id === userId) {
+        resolve();
+      } else {
+        reject(new Error("Permission denied"));
+      }
+    }
+    reject(new Error("Not authenticated"));
+  });
+}
 
-function isMyself(headers) {
-  const reqUserId = headers.authorization.split("Bearer ")[1];
-  console.log("reqUserId", reqUserId);
+function isLogin(req) {
+  return new Promise((resolve, reject) =>
+    req.isAuthenticated() ? resolve() : reject(new Error("Not authenticated"))
+  );
 }
 
 module.exports = {
   isMyself,
+  isLogin,
 };

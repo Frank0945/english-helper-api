@@ -3,7 +3,7 @@ const sequelize = require("../../services/db.service").sequelize;
 
 const UserVoc = sequelize.define("user_vocabularies", {
   user_id: {
-    type: DataTypes.INET(11),
+    type: DataTypes.CHAR(30),
     primaryKey: true,
     allowNull: false,
   },

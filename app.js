@@ -1,6 +1,5 @@
 /**
  * The project structure refers to https://github.com/geshan/expressjs-structure
- *
  */
 
 const express = require("express");
@@ -8,11 +7,16 @@ const bodyParser = require("body-parser");
 const app = express();
 const port = 3000;
 require("./src/services/db.service");
+const { passportSetup } = require("./src/services/auth/passport");
+const { middlewareSetup } = require("./src/services/auth/middleware");
+
+middlewareSetup(app);
+passportSetup(app);
 
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
-    extended: true
+    extended: true,
   })
 );
 

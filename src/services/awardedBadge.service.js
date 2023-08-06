@@ -5,7 +5,6 @@ async function awardedBadge(data) {
   return await AwardedBadge.create({
     user_id: data.user_id,
     badge_id: data.badge_id,
-    awarded_time: data.awarded_time,
   });
 }
 

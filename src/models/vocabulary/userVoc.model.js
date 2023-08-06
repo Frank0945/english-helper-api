@@ -22,7 +22,19 @@ const UserVoc = sequelize.define("user_vocabularies", {
   },
   corrected: {
     type: DataTypes.BOOLEAN,
-    allowNull: false,
+    defaultValue: false,
+  },
+  marked: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  used: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  published: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
   },
 });
 

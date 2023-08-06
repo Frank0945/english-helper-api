@@ -1,22 +1,41 @@
+/* eslint-disable no-caller */
 const userVoc = require("../services/userVoc.service");
+const { controller } = require("./_controller");
 
-async function getUserDaliyVoc(req, res, next) {
-  try {
-    res.json(await userVoc.getUserDaliyVoc(req.body));
-  } catch (err) {
-    next(err);
-  }
+async function getDaliyVocs(req, res, next) {
+  await controller(req, res, next, userVoc[arguments.callee.name]);
 }
 
-async function setUserDaliyVocCorrected(req, res, next) {
-  try {
-    res.json(await userVoc.setUserDaliyVocCorrected(req.body));
-  } catch (err) {
-    next(err);
-  }
+async function setIsCorrected(req, res, next) {
+  await controller(req, res, next, userVoc[arguments.callee.name]);
+}
+
+async function setMarked(req, res, next) {
+  await controller(req, res, next, userVoc[arguments.callee.name]);
+}
+
+async function setIsUsed(req, res, next) {
+  await controller(req, res, next, userVoc[arguments.callee.name]);
+}
+
+async function listNotUsed(req, res, next) {
+  await controller(req, res, next, userVoc[arguments.callee.name]);
+}
+
+async function listIsUsed(req, res, next) {
+  await controller(req, res, next, userVoc[arguments.callee.name]);
+}
+
+async function listIsMarked(req, res, next) {
+  await controller(req, res, next, userVoc[arguments.callee.name]);
 }
 
 module.exports = {
-  getUserDaliyVoc,
-  setUserDaliyVocCorrected,
+  getDaliyVocs,
+  setIsCorrected,
+  setMarked,
+  setIsUsed,
+  listNotUsed,
+  listIsUsed,
+  listIsMarked,
 };

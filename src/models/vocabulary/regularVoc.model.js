@@ -1,11 +1,11 @@
 const { DataTypes } = require("sequelize");
-const { UserVoc } = require("./userVoc.model");
+const { Voc } = require("./voc.model");
 const sequelize = require("../../services/db.service").sequelize;
 
 const RegularVoc = sequelize.define(
   "regular_vocabularies",
   {
-    voc_id: {
+    vocId: {
       type: DataTypes.INET(4),
       primaryKey: true,
       allowNull: false,
@@ -17,15 +17,15 @@ const RegularVoc = sequelize.define(
     explain: {
       type: DataTypes.TEXT,
       allowNull: false,
-    }
+    },
   },
   {
     timestamps: false,
   }
 );
 
-UserVoc.belongsTo(RegularVoc, { foreignKey: "voc_id" });
-RegularVoc.hasMany(UserVoc, { foreignKey: "voc_id" });
+Voc.belongsTo(RegularVoc, { foreignKey: "vocId" });
+RegularVoc.hasMany(Voc, { foreignKey: "vocId" });
 
 module.exports = {
   RegularVoc,

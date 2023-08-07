@@ -30,14 +30,14 @@ passport.use(
     },
     (accessToken, refreshToken, profile, done) => {
       userService
-        .getUserInfo({ user_id: profile.id })
+        .getUserInfo({ userId: profile.id })
         .then((result) => {
           if (result === null) {
             userService.setUserInfo({
-              user_id: profile.id,
+              userId: profile.id,
               email: profile.emails[0].value,
               nickname: profile.displayName,
-              image_url: profile.photos[0].value,
+              imageUrl: profile.photos[0].value,
             });
           }
           const userData = result ? setUserInfo(result) : setUserInfo(profile);
@@ -61,12 +61,12 @@ passport.deserializeUser((user, done) => {
 
 const setUserInfo = (profile) => {
   const userData = {};
-  const fl = !profile.user_id; // is first login
+  const fl = !profile.userId; // is first login
 
-  userData.user_id = fl ? profile.id : profile.user_id;
+  userData.userId = fl ? profile.id : profile.userId;
   userData.email = fl ? profile.emails[0].value : profile.email;
   userData.nickname = fl ? profile.displayName : profile.nickname;
-  userData.image_url = fl ? profile.photos[0].value : profile.image_url;
+  userData.imageUrl = fl ? profile.photos[0].value : profile.imageUrl;
 
   return userData;
 };

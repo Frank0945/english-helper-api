@@ -1,29 +1,17 @@
-const { isMyself } = require("../filters/auth");
+/* eslint-disable no-caller */
 const user = require("../services/user.service");
+const { controller } = require("./_controller");
 
 async function setUserInfo(req, res, next) {
-  try {
-    res.json(await user.setUserInfo(req.body));
-  } catch (err) {
-    next(err);
-  }
+  await controller(req, res, next, user[arguments.callee.name]);
 }
 
 async function getUserInfo(req, res, next) {
-  try {
-    await isMyself(req, req.body.user_id);
-    res.json(await user.getUserInfo(req.body));
-  } catch (err) {
-    next(err);
-  }
+  await controller(req, res, next, user[arguments.callee.name]);
 }
 
 async function setUserNickname(req, res, next) {
-  try {
-    res.json(await user.setUserNickname(req.body));
-  } catch (err) {
-    next(err);
-  }
+  await controller(req, res, next, user[arguments.callee.name]);
 }
 
 module.exports = {

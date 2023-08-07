@@ -18,11 +18,11 @@ app.use(
 
 const userRouter = require("./src/routes/user.route");
 const awardedRouter = require("./src/routes/awardedBadge.route");
-const userVocRouter = require("./src/routes/userVoc.route");
+const vocRouter = require("./src/routes/voc.route");
 
 app.use("/user", userRouter);
 app.use("/badge", awardedRouter);
-app.use("/userVoc", userVocRouter);
+app.use("/voc", vocRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "ok" });

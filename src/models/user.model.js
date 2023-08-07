@@ -4,7 +4,7 @@ const sequelize = require("../services/db.service").sequelize;
 const User = sequelize.define(
   "users",
   {
-    user_id: {
+    userId: {
       type: DataTypes.CHAR(30),
       primaryKey: true,
       allowNull: false,
@@ -17,11 +17,11 @@ const User = sequelize.define(
       type: DataTypes.CHAR(100),
       allowNull: false,
     },
-    image_url: {
+    imageUrl: {
       type: DataTypes.CHAR(100),
       allowNull: false,
     },
-    learning_time: {
+    learningTime: {
       type: DataTypes.INET(4),
       allowNull: true,
       zeroFill: true,

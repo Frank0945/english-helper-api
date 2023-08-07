@@ -1,6 +1,6 @@
 const { RegularVoc } = require("../models/vocabulary/regularVoc.model");
-const { UserVoc } = require("../models/vocabulary/userVoc.model");
-const sequelize = require("../services/db.service").sequelize;
+const { Voc } = require("../models/vocabulary/voc.model");
+const sequelize = require("./db.service").sequelize;
 const { Op } = require("sequelize");
 
 const vocsPerDay = 10;
@@ -9,16 +9,16 @@ const vocsForChoice = 40;
 
 async function getDaliyVocs(data) {
   try {
-    let rtnVocs = await getDaliyVocsPublised(data);
+    const untestedVocs = await getDaliyVocsUntested(data);
     let needUpload = false;
-
-    if (!rtnVocs) {
+    let rtnVocs = untestedVocs.data;
+    if (!untestedVocs.fullQuota) {
       needUpload = true;
       rtnVocs = await RegularVoc.findAll({
         where: {
-          voc_id: {
+          vocId: {
             [Op.notIn]: sequelize.literal(
-              `(SELECT voc_id FROM user_vocabularies WHERE user_id = ${data.user_id} AND corrected <> 0)`
+              `(SELECT vocId FROM vocabularies WHERE userId = ${data.userId} AND corrected IS NOT NULL)`
             ),
           },
         },
@@ -26,18 +26,18 @@ async function getDaliyVocs(data) {
         limit: vocsPerDay,
       });
     }
-    const amount = rtnVocs.length;
-    if (amount === 0) return [];
-
-    const rtnVocsIdsSet = new Set(rtnVocs.map((row) => row.voc_id));
+    if (!rtnVocs) {
+      return [];
+    }
+    const rtnVocsIdsSet = new Set(rtnVocs.map((row) => row.vocId));
     const randomVocs = await RegularVoc.findAll({
       where: {
-        voc_id: {
+        vocId: {
           [Op.notIn]: rtnVocsIdsSet,
         },
       },
       order: sequelize.random(),
-      limit: amount * optionsNum,
+      limit: rtnVocs.length * optionsNum,
     });
 
     randomVocs.forEach((voc, idx) => {
@@ -49,7 +49,7 @@ async function getDaliyVocs(data) {
     });
 
     if (needUpload) {
-      await addDaliyVoc(rtnVocs, data.user_id);
+      await addDaliyVoc(rtnVocs, data.userId);
     }
     return rtnVocs;
   } catch (error) {
@@ -58,34 +58,39 @@ async function getDaliyVocs(data) {
   }
 }
 
-async function getDaliyVocsPublised(data) {
+/**
+ * @returns {{ data: [], fullQuota: boolean }}
+ */
+async function getDaliyVocsUntested(data) {
   try {
     const TODAY_START = new Date().setHours(0, 0, 0, 0);
     const result = await RegularVoc.findAll({
       attributes: [
-        "voc_id",
+        "vocId",
         "vocabulary",
         "explain",
         [
           sequelize.literal(
-            "(SELECT corrected FROM user_vocabularies WHERE user_vocabularies.voc_id = regular_vocabularies.voc_id AND user_vocabularies.corrected = true)"
+            "(SELECT corrected FROM vocabularies WHERE vocabularies.vocId = regular_vocabularies.vocId)"
           ),
           "corrected",
         ],
       ],
       where: {
-        voc_id: {
+        vocId: {
           [Op.in]: sequelize.literal(
-            `(SELECT voc_id FROM user_vocabularies WHERE
-               user_id = ${data.user_id} AND 
-               published = true AND 
-               createdAt > ${TODAY_START}
+            `(SELECT vocId FROM vocabularies WHERE
+               userId = ${data.userId} AND 
+               createdAt > FROM_UNIXTIME(${TODAY_START / 1000})
             )`
           ),
         },
       },
     });
-    return result.filter((item) => !item.dataValues.corrected);
+    return {
+      data: result.filter((item) => item.dataValues.corrected == null),
+      fullQuota: !!result.length,
+    };
   } catch (error) {
     console.error("error");
     throw error;
@@ -95,45 +100,47 @@ async function getDaliyVocsPublised(data) {
 async function addDaliyVoc(data, userId) {
   data = data.map((row) => {
     return {
-      user_id: userId,
-      voc_id: row.voc_id,
-      published: true,
+      userId,
+      vocId: row.vocId,
+      createdAt: sequelize.literal("NOW()"),
     };
   });
-  return await UserVoc.bulkCreate(data);
+  return await Voc.bulkCreate(data, {
+    updateOnDuplicate: ["createdAt"],
+  });
 }
 
-async function setIsCorrected(data) {
-  return await UserVoc.update(
-    { corrected: true },
+async function setCorrected(data) {
+  return await Voc.update(
+    { corrected: data.corrected },
     {
       where: {
-        user_id: data.user_id,
-        voc_id: data.voc_id,
+        userId: data.userId,
+        vocId: data.vocId,
       },
     }
   );
 }
 
 async function setMarked(data) {
-  return await UserVoc.update(
+  return await Voc.update(
     { marked: data.marked === undefined ? true : data.marked },
     {
       where: {
-        user_id: data.user_id,
-        voc_id: data.voc_id,
+        userId: data.userId,
+        vocId: data.vocId,
       },
     }
   );
 }
 
 async function setIsUsed(data) {
-  return await UserVoc.update(
+  return await Voc.update(
     { used: true },
     {
       where: {
-        user_id: data.user_id,
-        voc_id: data.voc_id,
+        userId: data.userId,
+        vocId: data.vocId,
       },
     }
   );
@@ -158,27 +165,27 @@ async function listIsMarked(data) {
 }
 
 /**
- * @param {number} cursor - the cursor of the last voc_id in the last page
+ * @param {number} cursor - the cursor of the last vocId in the last page
  * @param {string} rule - the SQL rule to filter the vocs
  */
 async function listByRule(data, cursor = 0, rule) {
   return await RegularVoc.findAll({
     where: {
-      voc_id: {
+      vocId: {
         [Op.in]: sequelize.literal(
-          `(SELECT voc_id FROM user_vocabularies WHERE user_id = ${data.user_id} AND ${rule})`
+          `(SELECT vocId FROM vocabularies WHERE userId = ${data.userId} AND ${rule})`
         ),
         [Op.gt]: cursor,
       },
     },
-    order: [["voc_id", "ASC"]],
+    order: [["vocId", "ASC"]],
     limit: vocsForChoice,
   });
 }
 
 module.exports = {
   getDaliyVocs,
-  setIsCorrected,
+  setCorrected,
   setMarked,
   setIsUsed,
   listIsUsed,

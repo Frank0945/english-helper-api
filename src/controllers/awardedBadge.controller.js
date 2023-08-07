@@ -1,19 +1,13 @@
-const AwardedBadge = require("../services/awardedBadge.service");
+/* eslint-disable no-caller */
+const awardedBadgeService = require("../services/awardedBadge.service");
+const { controller } = require("./_controller");
 
 async function awardedBadge(req, res, next) {
-  try {
-    res.json(await AwardedBadge.awardedBadge(req.body));
-  } catch (err) {
-    next(err);
-  }
+  await controller(req, res, next, awardedBadgeService[arguments.callee.name]);
 }
 
 async function listBadgesByUserId(req, res, next) {
-  try {
-    res.json(await AwardedBadge.listBadgesByUserId(req.body));
-  } catch (err) {
-    next(err);
-  }
+  await controller(req, res, next, awardedBadgeService[arguments.callee.name]);
 }
 
 module.exports = {

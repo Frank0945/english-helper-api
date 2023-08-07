@@ -2,24 +2,27 @@ const { User } = require("../models/user.model");
 
 async function setUserInfo(data) {
   return await User.create({
-    user_id: data.user_id,
+    userId: data.userId,
     email: data.email,
     nickname: data.nickname,
-    image_url: data.image_url,
-    learning_time: data.learning_time,
+    imageUrl: data.imageUrl,
+    learningTime: data.learningTime,
   });
 }
 
 async function getUserInfo(data) {
-  return await User.findByPk(data.user_id);
+  return await User.findByPk(data.userId);
 }
 
 async function setUserNickname(data) {
-  return await User.update({ nickname: data.nickname }, {
-    where: {
-      user_id: data.user_id,
-    },
-  });
+  return await User.update(
+    { nickname: data.nickname },
+    {
+      where: {
+        userId: data.userId,
+      },
+    }
+  );
 }
 
 module.exports = {

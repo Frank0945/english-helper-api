@@ -10,13 +10,23 @@ async function listHistoryVocs(data) {
 
 async function addVoc(data) {
   try {
-    const userId = data.userId;
-
     const created = await VocsHistory.create({
-      userId,
+      userId: data.userId,
       voc: data.voc,
     });
 
+    await limitVocAmount(data);
+
+    return created;
+  } catch (error) {
+    console.error("error");
+    throw error;
+  }
+}
+
+async function limitVocAmount(data) {
+  try {
+    const userId = data.userId;
     const recordCount = await VocsHistory.count({ where: { userId } });
 
     if (recordCount > 20) {
@@ -29,8 +39,6 @@ async function addVoc(data) {
         where: { userId, voc: oldestRecord.voc },
       });
     }
-
-    return created;
   } catch (error) {
     console.error("error");
     throw error;

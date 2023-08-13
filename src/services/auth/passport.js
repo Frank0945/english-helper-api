@@ -12,13 +12,30 @@ function passportSetup(app) {
     passport.authenticate("google", { scope: ["profile", "email"] })
   );
 
+  app.get("/auth/logout", (req, res, next) => {
+    req.logout((err) => {
+      if (err) {
+        return next(err);
+      }
+      res.json({ login: false });
+    });
+  });
+
   app.get(
     "/auth/google/callback",
     passport.authenticate("google", {
-      successRedirect: "/",
-      failureRedirect: "/login",
+      successRedirect: "/auth/success",
+      failureRedirect: "/auth/failure",
     })
   );
+
+  app.get("/auth/success", (req, res) => {
+    res.json({ login: true });
+  });
+
+  app.get("/auth/failure", (req, res) => {
+    res.status(401).json({ login: false });
+  });
 }
 
 passport.use(

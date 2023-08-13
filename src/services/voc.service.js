@@ -124,7 +124,7 @@ async function setCorrected(data) {
 
 async function setMarked(data) {
   return await Voc.update(
-    { marked: data.marked === undefined ? true : data.marked },
+    { marked: data.marked },
     {
       where: {
         userId: data.userId,
@@ -150,7 +150,12 @@ async function setIsUsed(data) {
  * Will **not return** the vocs that have been marked
  */
 async function listNotUsed(data) {
-  return await listByRule(data, data.cursor || 0, "used <> 1 AND marked <> 1");
+  return await listByRule(
+    data,
+    data.cursor || 0,
+    "used = 1 OR marked = 1",
+    Op.notIn
+  );
 }
 
 /**
@@ -167,12 +172,13 @@ async function listIsMarked(data) {
 /**
  * @param {number} cursor - the cursor of the last vocId in the last page
  * @param {string} rule - the SQL rule to filter the vocs
+ * @param {unique symbol} ruleType - the SQL rule type
  */
-async function listByRule(data, cursor = 0, rule) {
+async function listByRule(data, cursor = 0, rule, ruleType = Op.in) {
   return await RegularVoc.findAll({
     where: {
       vocId: {
-        [Op.in]: sequelize.literal(
+        [ruleType]: sequelize.literal(
           `(SELECT vocId FROM vocabularies WHERE userId = ${data.userId} AND ${rule})`
         ),
         [Op.gt]: cursor,

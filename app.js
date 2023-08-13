@@ -19,17 +19,19 @@ app.use(
 const userRouter = require("./src/routes/user.route");
 const awardedRouter = require("./src/routes/awardedBadge.route");
 const vocRouter = require("./src/routes/voc.route");
+const vocsHistoryRouter = require("./src/routes/vocsHistory.route");
 
 app.use("/user", userRouter);
 app.use("/badge", awardedRouter);
 app.use("/voc", vocRouter);
+app.use("/vocsHistory", vocsHistoryRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "ok" });
 });
 
 app.use((err, req, res, next) => {
-  res.status(500).json({ error: err.message });
+  res.status(500).json(err);
 });
 
 app.listen(port, () => {

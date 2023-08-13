@@ -3,9 +3,9 @@ const { isMyself } = require("../filters/auth");
 
 function controller(fun) {
   return async (req, res, next) => {
-    const isGet = req.method === "GET";
+    const needQuery = req.method === "GET" || req.method === "DELETE";
     try {
-      res.json(await fun(isGet ? req.query : req.body));
+      res.json(await fun(needQuery ? req.query : req.body));
     } catch (err) {
       next(err);
     }

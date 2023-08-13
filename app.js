@@ -21,12 +21,14 @@ const awardedRouter = require("./src/routes/awardedBadge.route");
 const vocRouter = require("./src/routes/voc.route");
 const vocsHistoryRouter = require("./src/routes/vocsHistory.route");
 const articleRouter = require("./src/routes/article.route");
+const quizRouter = require("./src/routes/quiz.route");
 
 app.use("/user", userRouter);
 app.use("/badge", awardedRouter);
 app.use("/voc", vocRouter);
 app.use("/vocsHistory", vocsHistoryRouter);
 app.use("/article", articleRouter);
+app.use("/quiz", quizRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "ok" });

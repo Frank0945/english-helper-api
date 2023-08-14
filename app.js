@@ -26,7 +26,7 @@ const quizRouter = require("./src/routes/quiz.route");
 app.use("/user", userRouter);
 app.use("/badge", awardedRouter);
 app.use("/voc", vocRouter);
-app.use("/vocsHistory", vocsHistoryRouter);
+app.use("/voc/history", vocsHistoryRouter);
 app.use("/article", articleRouter);
 app.use("/quiz", quizRouter);
 

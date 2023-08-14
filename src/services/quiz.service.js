@@ -1,4 +1,5 @@
 const { Quiz } = require("../models/quiz.model");
+const sequelize = require("./db.service").sequelize;
 
 const maxQuizAmount = 20;
 
@@ -34,20 +35,19 @@ async function createQuiz(data) {
 
 async function limitQuizAmount(data) {
   try {
-    const quizCount = await Quiz.count({
-      where: {
-        userId: data.userId,
-      },
-    });
-    if (quizCount > maxQuizAmount) {
-      await Quiz.destroy({
-        where: {
-          userId: data.userId,
-        },
-        limit: quizCount - maxQuizAmount,
-        order: [["articleId", "ASC"]],
-      });
-    }
+    const query = `
+    DELETE FROM quizzes
+    WHERE userId = ${data.userId} AND articleId IN (
+      SELECT articleId
+      FROM (
+        SELECT articleId, ROW_NUMBER() OVER (ORDER BY articleId DESC) AS row_num
+        FROM quizzes
+        WHERE userId = ${data.userId}
+      ) AS subquery
+      WHERE row_num > ${maxQuizAmount}
+    );
+  `;
+    await sequelize.query(query);
   } catch (error) {
     console.error("error");
     throw error;

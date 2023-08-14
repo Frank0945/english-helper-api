@@ -1,5 +1,7 @@
 const { VocsHistory } = require("../models/vocabulary/vocsHistory.model");
 
+const maxVocAmount = 20;
+
 async function listHistoryVocs(data) {
   return await VocsHistory.findAll({
     where: { userId: data.userId },
@@ -29,7 +31,7 @@ async function limitVocAmount(data) {
     const userId = data.userId;
     const recordCount = await VocsHistory.count({ where: { userId } });
 
-    if (recordCount > 20) {
+    if (recordCount > maxVocAmount) {
       const oldestRecord = await VocsHistory.findOne({
         where: { userId },
         order: [["createdAt", "ASC"]],

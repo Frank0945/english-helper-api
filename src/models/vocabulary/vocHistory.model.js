@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../../services/db.service").sequelize;
 
-const VocsHistory = sequelize.define(
-  "vocs_history",
+const vocHistory = sequelize.define(
+  "voc_history",
   {
     userId: {
       type: DataTypes.CHAR(30),
@@ -26,5 +26,5 @@ const VocsHistory = sequelize.define(
 );
 
 module.exports = {
-  VocsHistory,
+  vocHistory,
 };

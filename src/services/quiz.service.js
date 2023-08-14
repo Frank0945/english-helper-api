@@ -8,7 +8,7 @@ async function listQuizzes(data) {
     where: {
       userId: data.userId,
     },
-    attributes: ["articleId", "title", "vocs", "createdAt"],
+    attributes: ["articleId", "title", "voc", "createdAt"],
     order: [["articleId", "DESC"]],
   });
 }
@@ -58,7 +58,6 @@ async function getQuizById(data) {
   return await Quiz.findOne({
     where: {
       articleId: data.articleId,
-      userId: data.userId,
     },
   });
 }

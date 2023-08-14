@@ -14,7 +14,7 @@ const Quiz = sequelize.define(
       type: DataTypes.CHAR(30),
       allowNull: false,
     },
-    vocs: {
+    voc: {
       type: DataTypes.TEXT,
       allowNull: false,
     },

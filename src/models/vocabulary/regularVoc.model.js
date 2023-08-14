@@ -3,7 +3,7 @@ const { Voc } = require("./voc.model");
 const sequelize = require("../../services/db.service").sequelize;
 
 const RegularVoc = sequelize.define(
-  "regular_vocabularies",
+  "regular_vocabulary",
   {
     vocId: {
       type: DataTypes.INET(4),
@@ -21,6 +21,7 @@ const RegularVoc = sequelize.define(
   },
   {
     timestamps: false,
+    freezeTableName: true,
   }
 );
 

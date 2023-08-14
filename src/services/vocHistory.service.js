@@ -1,25 +1,25 @@
-const { VocsHistory } = require("../models/vocabulary/vocsHistory.model");
+const { vocHistory } = require("../models/vocabulary/vocHistory.model");
 const sequelize = require("./db.service").sequelize;
 
 const maxVocAmount = 20;
 
-async function listHistoryVocs(data) {
-  return await VocsHistory.findAll({
+async function listHistoryvoc(data) {
+  return await vocHistory.findAll({
     where: { userId: data.userId },
     order: [["createdAt", "DESC"]],
     attributes: ["voc"],
   });
 }
 
-async function addVocs(data) {
+async function addvoc(data) {
   try {
-    const cData = data.vocs.map((voc) => {
+    const cData = data.voc.map((voc) => {
       return {
         userId: data.userId,
         voc,
       };
     });
-    const created = await VocsHistory.bulkCreate(cData, {
+    const created = await vocHistory.bulkCreate(cData, {
       updateOnDuplicate: ["createdAt"],
     });
 
@@ -35,12 +35,12 @@ async function addVocs(data) {
 async function limitVocAmount(data) {
   try {
     const query = `
-    DELETE FROM vocs_history
+    DELETE FROM voc_history
     WHERE (userId, voc) IN (
       SELECT userId, voc
       FROM (
         SELECT userId, voc, ROW_NUMBER() OVER (PARTITION BY userId ORDER BY createdAt DESC) AS row_num
-        FROM vocs_history
+        FROM voc_history
         WHERE userId = ${data.userId}
       ) AS subquery
       WHERE row_num > ${maxVocAmount}
@@ -54,13 +54,13 @@ async function limitVocAmount(data) {
 }
 
 async function removeVoc(data) {
-  return await VocsHistory.destroy({
+  return await vocHistory.destroy({
     where: { userId: data.userId, voc: data.voc },
   });
 }
 
 module.exports = {
-  listHistoryVocs,
-  addVocs,
+  listHistoryvoc,
+  addvoc,
   removeVoc,
 };

@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../../services/db.service").sequelize;
 
 const Voc = sequelize.define(
-  "vocabularies",
+  "vocabulary",
   {
     userId: {
       type: DataTypes.CHAR(30),

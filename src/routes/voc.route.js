@@ -3,7 +3,7 @@ const router = express.Router();
 const { controller } = require("../controllers/controllers");
 const voc = require("../services/voc.service");
 
-router.get("/dailyVocs", controller(voc.getDaliyVocs));
+router.get("/dailyvoc", controller(voc.getDaliyvoc));
 router.put("/set/corrected", controller(voc.setCorrected));
 router.put("/set/marked", controller(voc.setMarked));
 router.put("/set/isUsed", controller(voc.setIsUsed));

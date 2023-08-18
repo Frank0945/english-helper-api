@@ -1,4 +1,5 @@
-const { Quiz } = require("../models/quiz.model");
+const { Quiz } = require("../models/quiz/quiz.model");
+const { QuizQuestions } = require("../models/quiz/quizQuestions.model");
 const sequelize = require("./db.service").sequelize;
 
 const maxQuizAmount = 20;
@@ -14,28 +15,97 @@ async function listQuizzes(data) {
 }
 
 /**
- * @param {{quizzes: Array<object>}} data
+ * @param {{
+ *  userId: string,
+ *  quizzes: Array<{
+ *    quiz: {
+ *      voc: string,
+ *      title: string,
+ *      content: string,
+ *    },
+ *    questions: Array<{
+ *      question: string,
+ *      option1: string,
+ *      option2: string,
+ *      option3: string,
+ *      option4: string,
+ *      correct: number,
+ *      choice: number,
+ *    }>
+ *  }>}} data
  */
 async function createQuiz(data) {
+  const t = await sequelize.transaction();
+
   try {
-    const cData = data.quizzes.map((row) => {
+    const cQuiz = data.quizzes.map((row) => {
       return {
         userId: data.userId,
-        ...row,
+        ...row.quiz,
       };
     });
-    await Quiz.bulkCreate(cData);
-    await limitQuizAmount(data);
-    return cData;
+
+    const quizRtn = await Quiz.bulkCreate(cQuiz, { transaction: t });
+
+    const articleIds = [];
+
+    quizRtn.forEach((q) => {
+      articleIds.push(q.dataValues.articleId);
+    });
+
+    const cQuestions = data.quizzes.flatMap((quiz, idx) => {
+      return quiz.questions.map((row, qNumber) => {
+        return {
+          articleId: articleIds[idx],
+          qNumber,
+          ...row,
+        };
+      });
+    });
+
+    await QuizQuestions.bulkCreate(cQuestions, { transaction: t });
+    await t.commit();
+    return true;
   } catch (error) {
-    console.error("error");
+    console.error(error);
+    await t.rollback();
     throw error;
   }
 }
 
-async function limitQuizAmount(data) {
+/**
+ * @param {{
+ *  quizzes: Array<{
+ *    qId: string,
+ *    choice: number,
+ * }>}} data
+ */
+async function updateQuizChoice(data) {
+  const t = await sequelize.transaction();
   try {
-    const query = `
+    for (const update of data.quizzes) {
+      console.log(update);
+      await QuizQuestions.update(
+        { choice: update.choice },
+        {
+          where: { qId: update.qId },
+          transaction: t,
+        }
+      );
+    }
+
+    await limitQuizAmount(data, t);
+
+    await t.commit();
+    return true;
+  } catch (error) {
+    await t.rollback();
+    throw error;
+  }
+}
+
+async function limitQuizAmount(data, t) {
+  const query = `
     DELETE FROM quizzes
     WHERE userId = ${data.userId} AND articleId IN (
       SELECT articleId
@@ -47,11 +117,7 @@ async function limitQuizAmount(data) {
       WHERE row_num > ${maxQuizAmount}
     );
   `;
-    await sequelize.query(query);
-  } catch (error) {
-    console.error("error");
-    throw error;
-  }
+  await sequelize.query(query, { transaction: t });
 }
 
 async function getQuizById(data) {
@@ -59,6 +125,17 @@ async function getQuizById(data) {
     where: {
       articleId: data.articleId,
     },
+    attributes: {
+      exclude: ["articleId", "userId"],
+    },
+    include: {
+      model: QuizQuestions,
+      findAll: true,
+      attributes: {
+        exclude: ["articleId", "qNumber"],
+      },
+    },
+    order: [[QuizQuestions, "qNumber", "ASC"]],
   });
 }
 
@@ -66,4 +143,5 @@ module.exports = {
   listQuizzes,
   createQuiz,
   getQuizById,
+  updateQuizChoice,
 };

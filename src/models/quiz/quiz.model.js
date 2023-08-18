@@ -1,13 +1,14 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../services/db.service").sequelize;
+const { QuizQuestions } = require("./quizQuestions.model");
+const sequelize = require("../../services/db.service").sequelize;
 
 const Quiz = sequelize.define(
   "quizzes",
   {
     articleId: {
-      type: DataTypes.INET(10),
+      type: DataTypes.UUIDV1,
+      defaultValue: DataTypes.UUIDV1,
       allowNull: false,
-      autoIncrement: true,
       primaryKey: true,
     },
     userId: {
@@ -26,30 +27,6 @@ const Quiz = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    ans1: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    ans2: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    ans3: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    ans4: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    choice: {
-      type: DataTypes.TINYINT(1),
-      allowNull: false,
-    },
-    correctAns: {
-      type: DataTypes.TINYINT(1),
-      allowNull: false,
-    },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -60,6 +37,9 @@ const Quiz = sequelize.define(
     timestamps: false,
   }
 );
+
+QuizQuestions.belongsTo(Quiz, { foreignKey: "articleId" });
+Quiz.hasMany(QuizQuestions, { foreignKey: "articleId" });
 
 module.exports = {
   Quiz,

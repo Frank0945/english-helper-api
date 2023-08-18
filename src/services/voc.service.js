@@ -9,10 +9,10 @@ const vocForChoice = 40;
 
 async function getDaliyvoc(data) {
   try {
-    const untestedvoc = await getDaliyvocUntested(data);
+    const untestedVoc = await getDaliyvocUntested(data);
     let needUpload = false;
-    let rtnvoc = untestedvoc.data;
-    if (!untestedvoc.fullQuota) {
+    let rtnvoc = untestedVoc.data;
+    if (!untestedVoc.fullQuota) {
       needUpload = true;
       rtnvoc = await RegularVoc.findAll({
         where: {

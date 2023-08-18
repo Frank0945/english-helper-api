@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { controller } = require("../controllers/controllers");
-const user = require("../services/user.service");
+const article = require("../services/article.service");
 
-router.put("/update/nickname", controller(user.setUserNickname));
+router.post("/generate", controller(article.generateArticle));
 
 module.exports = router;

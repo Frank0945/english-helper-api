@@ -5,12 +5,12 @@ const sequelize = require("../../services/db.service").sequelize;
 const Badges = sequelize.define(
   "badges",
   {
-    badge_id: {
+    badgeId: {
       type: DataTypes.INET(11),
       primaryKey: true,
       allowNull: false,
     },
-    badge_name: {
+    badgeName: {
       type: DataTypes.CHAR(30),
       allowNull: false,
     },
@@ -18,7 +18,7 @@ const Badges = sequelize.define(
       type: DataTypes.CHAR(100),
       allowNull: false,
     },
-    badge_icon: {
+    badgeIcon: {
       type: DataTypes.CHAR(100),
       allowNull: false,
     },
@@ -28,8 +28,8 @@ const Badges = sequelize.define(
   }
 );
 
-AwardedBadge.belongsTo(Badges, { foreignKey: "badge_id" });
-Badges.hasMany(AwardedBadge, { foreignKey: "badge_id" });
+AwardedBadge.belongsTo(Badges, { foreignKey: "badgeId" });
+Badges.hasMany(AwardedBadge, { foreignKey: "badgeId" });
 
 module.exports = {
   Badges,

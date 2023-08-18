@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const controller = require("../controllers/awardedBadge.controller");
+const { controller } = require("../controllers/controllers");
+const awardedBadge = require("../services/awardedBadge.service");
 
-router.post("/awarded", controller.awardedBadge);
-router.get("/list", controller.listBadgesByUserId);
+router.get("/list", controller(awardedBadge.listBadgesByUserId));
 
 module.exports = router;

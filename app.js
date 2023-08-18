@@ -1,35 +1,41 @@
-/**
- * The project structure refers to https://github.com/geshan/expressjs-structure
- *
- */
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const port = 3000;
 require("./src/services/db.service");
+const { passportSetup } = require("./src/services/auth/passport");
+const { middlewareSetup } = require("./src/services/auth/middleware");
+
+middlewareSetup(app);
+passportSetup(app);
 
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
-    extended: true
+    extended: true,
   })
 );
 
 const userRouter = require("./src/routes/user.route");
 const awardedRouter = require("./src/routes/awardedBadge.route");
-const userVocRouter = require("./src/routes/userVoc.route");
+const vocRouter = require("./src/routes/voc.route");
+const vocHistoryRouter = require("./src/routes/vocHistory.route");
+const articleRouter = require("./src/routes/article.route");
+const quizRouter = require("./src/routes/quiz.route");
 
 app.use("/user", userRouter);
 app.use("/badge", awardedRouter);
-app.use("/userVoc", userVocRouter);
+app.use("/voc", vocRouter);
+app.use("/voc/history", vocHistoryRouter);
+app.use("/article", articleRouter);
+app.use("/quiz", quizRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "ok" });
 });
 
 app.use((err, req, res, next) => {
-  res.status(500).json({ error: err.message });
+  res.status(500).json(err);
 });
 
 app.listen(port, () => {

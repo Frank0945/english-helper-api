@@ -39,7 +39,7 @@ const Quiz = sequelize.define(
 );
 
 QuizQuestions.belongsTo(Quiz, { foreignKey: "articleId" });
-Quiz.hasMany(QuizQuestions, { foreignKey: "articleId" });
+Quiz.hasMany(QuizQuestions, { foreignKey: "articleId", as: "questions" });
 
 module.exports = {
   Quiz,

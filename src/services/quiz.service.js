@@ -1,17 +1,57 @@
 const { Quiz } = require("../models/quiz/quiz.model");
 const { QuizQuestions } = require("../models/quiz/quizQuestions.model");
 const sequelize = require("./db.service").sequelize;
+const { Op } = require("sequelize");
 
 const maxQuizAmount = 20;
 
 async function listQuizzes(data) {
-  return await Quiz.findAll({
-    where: {
-      userId: data.userId,
-    },
-    attributes: ["articleId", "title", "voc", "createdAt"],
-    order: [["articleId", "DESC"]],
-  });
+  /** Destroy the empty choices */
+  try {
+    await Quiz.destroy({
+      where: {
+        userId: data.userId,
+        articleId: {
+          [Op.in]: sequelize.literal(
+            "(SELECT DISTINCT articleId FROM quiz_questions WHERE choice IS NULL)"
+          ),
+        },
+      },
+    });
+
+    return await Quiz.findAll({
+      where: {
+        userId: data.userId,
+      },
+      include: [
+        {
+          model: QuizQuestions,
+          as: "questions",
+          attributes: [],
+        },
+      ],
+      attributes: [
+        "articleId",
+        "title",
+        "voc",
+        [sequelize.fn("COUNT", sequelize.col("questions.qId")), "total"],
+        [
+          sequelize.fn(
+            "SUM",
+            sequelize.literal(
+              "CASE WHEN questions.choice = questions.correct THEN 1 ELSE 0 END"
+            )
+          ),
+          "corrected",
+        ],
+      ],
+      order: [["articleId", "DESC"]],
+      group: ["quizzes.articleId"],
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 /**
@@ -104,6 +144,15 @@ async function updateQuizChoice(data) {
   }
 }
 
+async function cancelQuiz(data) {
+  await Quiz.destroy({
+    where: {
+      userId: data.userId,
+      articleId: data.articleId,
+    },
+  });
+}
+
 async function limitQuizAmount(data, t) {
   const query = `
     DELETE FROM quizzes
@@ -144,4 +193,5 @@ module.exports = {
   createQuiz,
   getQuizById,
   updateQuizChoice,
+  cancelQuiz,
 };

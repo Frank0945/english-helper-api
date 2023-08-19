@@ -2,7 +2,7 @@ function isMyself(req, userId) {
   return new Promise((resolve, reject) => {
     if (req.isAuthenticated()) {
       if (req.session.passport.user.userId === userId) {
-        resolve();
+        resolve(true);
       } else {
         reject(new Error("Permission denied"));
       }
@@ -12,9 +12,7 @@ function isMyself(req, userId) {
 }
 
 function isLogin(req) {
-  return new Promise((resolve, reject) =>
-    req.isAuthenticated() ? resolve() : reject(new Error("Not authenticated"))
-  );
+  return !!req.isAuthenticated();
 }
 
 module.exports = {

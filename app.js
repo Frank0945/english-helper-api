@@ -1,10 +1,18 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const app = express();
-const port = 3000;
 require("./src/services/db.service");
 const { passportSetup } = require("./src/services/auth/passport");
 const { middlewareSetup } = require("./src/services/auth/middleware");
+require("dotenv").config();
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
 
 middlewareSetup(app);
 passportSetup(app);
@@ -31,13 +39,13 @@ app.use("/article", articleRouter);
 app.use("/quiz", quizRouter);
 
 app.get("/", (req, res) => {
-  res.json({ message: "ok" });
+  res.json({ status: "ok" });
 });
 
 app.use((err, req, res, next) => {
   res.status(500).json(err);
 });
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+app.listen(process.env.HOST_POST, () => {
+  console.log(`Listening on port ${process.env.HOST_POST}`);
 });

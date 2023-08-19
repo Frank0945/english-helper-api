@@ -24,14 +24,10 @@ function passportSetup(app) {
   app.get(
     "/auth/google/callback",
     passport.authenticate("google", {
-      successRedirect: "/auth/success",
+      successRedirect: process.env.CLIENT_URL,
       failureRedirect: "/auth/failure",
     })
   );
-
-  app.get("/auth/success", (req, res) => {
-    res.json({ login: true });
-  });
 
   app.get("/auth/failure", (req, res) => {
     res.status(401).json({ login: false });
@@ -72,7 +68,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((user, done) => {
-  console.log("deserializeUser", user);
+  // console.log("deserializeUser", user);
   done(null, user);
 });
 

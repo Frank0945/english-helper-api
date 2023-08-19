@@ -124,7 +124,6 @@ async function updateQuizChoice(data) {
   const t = await sequelize.transaction();
   try {
     for (const update of data.quizzes) {
-      console.log(update);
       await QuizQuestions.update(
         { choice: update.choice },
         {

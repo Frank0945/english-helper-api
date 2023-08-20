@@ -114,11 +114,10 @@ async function createQuiz(data) {
 }
 
 /**
- * @param {{
- *  quizzes: Array<{
- *    qId: string,
- *    choice: number,
- * }>}} data
+ * @param {Array<{
+ *   qId: string,
+ *   choice: number
+ * }>} data
  */
 async function updateQuizChoice(data) {
   const t = await sequelize.transaction();
@@ -146,7 +145,6 @@ async function updateQuizChoice(data) {
 async function cancelQuiz(data) {
   await Quiz.destroy({
     where: {
-      userId: data.userId,
       articleId: data.articleId,
     },
   });

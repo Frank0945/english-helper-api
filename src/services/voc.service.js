@@ -22,6 +22,16 @@ async function getDaliyvoc(data) {
             ),
           },
         },
+        attributes: {
+          include: [
+            [
+              sequelize.literal(
+                "(SELECT marked FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)"
+              ),
+              "marked",
+            ],
+          ],
+        },
         order: sequelize.random(),
         limit: vocPerDay,
       });
@@ -65,17 +75,22 @@ async function getDaliyvocUntested(data) {
   try {
     const TODAY_START = new Date().setHours(0, 0, 0, 0);
     const result = await RegularVoc.findAll({
-      attributes: [
-        "vocId",
-        "vocabulary",
-        "explain",
-        [
-          sequelize.literal(
-            "(SELECT corrected FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)"
-          ),
-          "corrected",
+      attributes: {
+        include: [
+          [
+            sequelize.literal(
+              "(SELECT marked FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)"
+            ),
+            "marked",
+          ],
+          [
+            sequelize.literal(
+              "(SELECT corrected FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)"
+            ),
+            "corrected",
+          ],
         ],
-      ],
+      },
       where: {
         vocId: {
           [Op.in]: sequelize.literal(
@@ -123,25 +138,19 @@ async function setCorrected(data) {
 }
 
 async function setMarked(data) {
-  return await Voc.update(
-    { marked: data.marked },
+  return await Voc.create(
+    { userId: data.userId, vocId: data.vocId, marked: data.marked },
     {
-      where: {
-        userId: data.userId,
-        vocId: data.vocId,
-      },
+      updateOnDuplicate: ["marked"],
     }
   );
 }
 
 async function setIsUsed(data) {
-  return await Voc.update(
-    { used: true },
+  return await Voc.create(
+    { userId: data.userId, vocId: data.vocId, used: true },
     {
-      where: {
-        userId: data.userId,
-        vocId: data.vocId,
-      },
+      updateOnDuplicate: ["used"],
     }
   );
 }

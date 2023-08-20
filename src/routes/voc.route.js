@@ -5,8 +5,8 @@ const voc = require("../services/voc.service");
 
 router.get("/daily", controller(voc.getDaliyvoc));
 router.put("/set/corrected", controller(voc.setCorrected));
-router.put("/set/marked", controller(voc.setMarked));
-router.put("/set/isUsed", controller(voc.setIsUsed));
+router.post("/set/marked", controller(voc.setMarked));
+router.post("/set/isUsed", controller(voc.setIsUsed));
 router.get("/list/notUsed", controller(voc.listNotUsed));
 router.get("/list/isUsed", controller(voc.listIsUsed));
 router.get("/list/isMarked", controller(voc.listIsMarked));

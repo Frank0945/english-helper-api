@@ -27,8 +27,7 @@ const Voc = sequelize.define(
     },
     createdAt: {
       type: DataTypes.DATE,
-      allowNull: false,
-      hasDefault: true,
+      defaultValue: DataTypes.NOW,
     },
   },
   {

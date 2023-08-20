@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { controller } = require("../controllers/controllers");
-const voc = require("../services/voc.service");
+const voc = require("../services/vocabulary/voc.service");
 
 router.get("/daily", controller(voc.getDaliyvoc));
 router.put("/set/corrected", controller(voc.setCorrected));

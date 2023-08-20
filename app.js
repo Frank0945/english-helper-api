@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const app = express();
-require("./src/services/db.service");
+require("./src/services/_db.service");
 const { passportSetup } = require("./src/services/auth/passport");
 const { middlewareSetup } = require("./src/services/auth/middleware");
 require("dotenv").config();
@@ -25,14 +25,14 @@ app.use(
 );
 
 const userRouter = require("./src/routes/user.route");
-const awardedRouter = require("./src/routes/awardedBadge.route");
+const badgeRouter = require("./src/routes/badge.route");
 const vocRouter = require("./src/routes/voc.route");
 const vocHistoryRouter = require("./src/routes/vocHistory.route");
 const articleRouter = require("./src/routes/article.route");
 const quizRouter = require("./src/routes/quiz.route");
 
 app.use("/user", userRouter);
-app.use("/badge", awardedRouter);
+app.use("/badge", badgeRouter);
 app.use("/voc", vocRouter);
 app.use("/voc/history", vocHistoryRouter);
 app.use("/article", articleRouter);

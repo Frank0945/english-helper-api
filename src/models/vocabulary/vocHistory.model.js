@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../../services/db.service").sequelize;
+const sequelize = require("../../services/_db.service").sequelize;
 
 const vocHistory = sequelize.define(
   "voc_history",

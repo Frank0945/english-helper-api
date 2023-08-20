@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { QuizQuestions } = require("./quizQuestions.model");
-const sequelize = require("../../services/db.service").sequelize;
+const sequelize = require("../../services/_db.service").sequelize;
 
 const Quiz = sequelize.define(
   "quizzes",

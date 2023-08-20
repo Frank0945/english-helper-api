@@ -1,16 +1,16 @@
 const { Quiz } = require("../models/quiz/quiz.model");
 const { QuizQuestions } = require("../models/quiz/quizQuestions.model");
-const sequelize = require("./db.service").sequelize;
+const sequelize = require("./_db.service").sequelize;
 const { Op } = require("sequelize");
 
 const maxQuizAmount = 20;
 
-async function listQuizzes(data) {
+async function listQuizzes(_, userId) {
   /** Destroy the empty choices */
   try {
     await Quiz.destroy({
       where: {
-        userId: data.userId,
+        userId,
         articleId: {
           [Op.in]: sequelize.literal(
             "(SELECT DISTINCT articleId FROM quiz_questions WHERE choice IS NULL)"
@@ -21,7 +21,7 @@ async function listQuizzes(data) {
 
     return await Quiz.findAll({
       where: {
-        userId: data.userId,
+        userId,
       },
       include: [
         {
@@ -55,32 +55,30 @@ async function listQuizzes(data) {
 }
 
 /**
- * @param {{
- *  userId: string,
- *  quizzes: Array<{
- *    quiz: {
- *      voc: string,
- *      title: string,
- *      content: string,
- *    },
- *    questions: Array<{
- *      question: string,
- *      option1: string,
- *      option2: string,
- *      option3: string,
- *      option4: string,
- *      correct: number,
- *      choice: number,
- *    }>
- *  }>}} data
+ * @param {Array<{
+ *  quiz: {
+ *    voc: string,
+ *    title: string,
+ *    content: string,
+ *  },
+ *  questions: Array<{
+ *    question: string,
+ *    option1: string,
+ *    option2: string,
+ *    option3: string,
+ *    option4: string,
+ *    correct: number,
+ *    choice: number,
+ * }>
+ * }>} quizzes
  */
-async function createQuiz(data) {
+async function createQuiz(data, userId) {
   const t = await sequelize.transaction();
 
   try {
     const cQuiz = data.quizzes.map((row) => {
       return {
-        userId: data.userId,
+        userId,
         ...row.quiz,
       };
     });
@@ -117,9 +115,9 @@ async function createQuiz(data) {
  * @param {Array<{
  *   qId: string,
  *   choice: number
- * }>} data
+ * }>} quizzes
  */
-async function updateQuizChoice(data) {
+async function updateQuizChoice(data, userId) {
   const t = await sequelize.transaction();
   try {
     for (const update of data.quizzes) {
@@ -132,7 +130,7 @@ async function updateQuizChoice(data) {
       );
     }
 
-    await limitQuizAmount(data, t);
+    await limitQuizAmount(userId, t);
 
     await t.commit();
     return true;
@@ -150,15 +148,15 @@ async function cancelQuiz(data) {
   });
 }
 
-async function limitQuizAmount(data, t) {
+async function limitQuizAmount(userId, t) {
   const query = `
     DELETE FROM quizzes
-    WHERE userId = ${data.userId} AND articleId IN (
+    WHERE userId = ${userId} AND articleId IN (
       SELECT articleId
       FROM (
         SELECT articleId, ROW_NUMBER() OVER (ORDER BY articleId DESC) AS row_num
         FROM quizzes
-        WHERE userId = ${data.userId}
+        WHERE userId = ${userId}
       ) AS subquery
       WHERE row_num > ${maxQuizAmount}
     );

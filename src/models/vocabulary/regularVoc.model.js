@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { Voc } = require("./voc.model");
-const sequelize = require("../../services/db.service").sequelize;
+const sequelize = require("../../services/_db.service").sequelize;
 
 const RegularVoc = sequelize.define(
   "regular_vocabulary",

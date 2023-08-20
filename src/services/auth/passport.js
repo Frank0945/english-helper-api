@@ -43,7 +43,7 @@ passport.use(
     },
     (accessToken, refreshToken, profile, done) => {
       userService
-        .getUserInfo({ userId: profile.id })
+        .getUserInfo(profile.id)
         .then((result) => {
           if (result === null) {
             userService.setUserInfo({

@@ -1,17 +1,17 @@
 const { AwardedBadge } = require("../models/badge/awardedBadge.model");
 const { Badges } = require("../models/badge/badges.model");
 
-async function awardedBadge(data) {
+async function awardedBadge(userId, badgeId) {
   return await AwardedBadge.create({
-    userId: data.userId,
-    badgeId: data.badgeId,
+    userId,
+    badgeId,
   });
 }
 
-async function listBadgesByUserId(data) {
+async function listBadgesByUserId(_, userId) {
   return await AwardedBadge.findAll({
     where: {
-      userId: data.userId,
+      userId,
     },
     include: { model: Badges },
   });

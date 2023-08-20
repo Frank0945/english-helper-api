@@ -1,15 +1,15 @@
-const { RegularVoc } = require("../models/vocabulary/regularVoc.model");
-const { Voc } = require("../models/vocabulary/voc.model");
-const sequelize = require("./db.service").sequelize;
+const { RegularVoc } = require("../../models/vocabulary/regularVoc.model");
+const { Voc } = require("../../models/vocabulary/voc.model");
+const sequelize = require("../_db.service").sequelize;
 const { Op } = require("sequelize");
 
 const vocPerDay = 10;
 const optionsNum = 3;
 const vocForChoice = 40;
 
-async function getDaliyvoc(data) {
+async function getDaliyvoc(_, userId) {
   try {
-    const untestedVoc = await getDaliyvocUntested(data);
+    const untestedVoc = await getDaliyvocUntested(userId);
     let needUpload = false;
     let rtnvoc = untestedVoc.data;
     if (!untestedVoc.fullQuota) {
@@ -18,7 +18,7 @@ async function getDaliyvoc(data) {
         where: {
           vocId: {
             [Op.notIn]: sequelize.literal(
-              `(SELECT vocId FROM vocabulary WHERE userId = ${data.userId} AND corrected IS NOT NULL)`
+              `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND corrected IS NOT NULL)`
             ),
           },
         },
@@ -59,7 +59,7 @@ async function getDaliyvoc(data) {
     });
 
     if (needUpload) {
-      await addDaliyVoc(rtnvoc, data.userId);
+      await addDaliyVoc(rtnvoc, userId);
     }
     return rtnvoc;
   } catch (error) {
@@ -71,7 +71,7 @@ async function getDaliyvoc(data) {
 /**
  * @returns {{ data: [], fullQuota: boolean }}
  */
-async function getDaliyvocUntested(data) {
+async function getDaliyvocUntested(userId) {
   try {
     const TODAY_START = new Date().setHours(0, 0, 0, 0);
     const result = await RegularVoc.findAll({
@@ -95,7 +95,7 @@ async function getDaliyvocUntested(data) {
         vocId: {
           [Op.in]: sequelize.literal(
             `(SELECT vocId FROM vocabulary WHERE
-               userId = ${data.userId} AND 
+               userId = ${userId} AND 
                createdAt > FROM_UNIXTIME(${TODAY_START / 1000})
             )`
           ),
@@ -125,30 +125,30 @@ async function addDaliyVoc(data, userId) {
   });
 }
 
-async function setCorrected(data) {
+async function setCorrected(data, userId) {
   return await Voc.update(
     { corrected: data.corrected },
     {
       where: {
-        userId: data.userId,
+        userId,
         vocId: data.vocId,
       },
     }
   );
 }
 
-async function setMarked(data) {
+async function setMarked(data, userId) {
   return await Voc.create(
-    { userId: data.userId, vocId: data.vocId, marked: data.marked },
+    { userId, vocId: data.vocId, marked: data.marked },
     {
       updateOnDuplicate: ["marked"],
     }
   );
 }
 
-async function setIsUsed(data) {
+async function setIsUsed(data, userId) {
   return await Voc.create(
-    { userId: data.userId, vocId: data.vocId, used: true },
+    { userId, vocId: data.vocId, used: true },
     {
       updateOnDuplicate: ["used"],
     }
@@ -158,9 +158,9 @@ async function setIsUsed(data) {
 /**
  * Will **not return** the voc that have been marked
  */
-async function listNotUsed(data) {
+async function listNotUsed(data, userId) {
   return await listByRule(
-    data,
+    userId,
     data.cursor || 0,
     "used = 1 OR marked = 1",
     Op.notIn
@@ -170,12 +170,12 @@ async function listNotUsed(data) {
 /**
  * Will **not return** the voc that have been marked
  */
-async function listIsUsed(data) {
-  return await listByRule(data, data.cursor || 0, "used = 1 AND marked <> 1");
+async function listIsUsed(data, userId) {
+  return await listByRule(userId, data.cursor || 0, "used = 1 AND marked <> 1");
 }
 
-async function listIsMarked(data) {
-  return await listByRule(data, data.cursor || 0, "marked = 1");
+async function listIsMarked(data, userId) {
+  return await listByRule(userId, data || 0, "marked = 1");
 }
 
 /**
@@ -183,12 +183,12 @@ async function listIsMarked(data) {
  * @param {string} rule - the SQL rule to filter the voc
  * @param {unique symbol} ruleType - the SQL rule type
  */
-async function listByRule(data, cursor = 0, rule, ruleType = Op.in) {
+async function listByRule(userId, cursor = 0, rule, ruleType = Op.in) {
   return await RegularVoc.findAll({
     where: {
       vocId: {
         [ruleType]: sequelize.literal(
-          `(SELECT vocId FROM vocabulary WHERE userId = ${data.userId} AND ${rule})`
+          `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND ${rule})`
         ),
         [Op.gt]: cursor,
       },

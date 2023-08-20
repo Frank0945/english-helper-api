@@ -10,16 +10,16 @@ async function setUserInfo(data) {
   });
 }
 
-async function getUserInfo(data) {
-  return await User.findByPk(data.userId);
+async function getUserInfo(userId) {
+  return await User.findByPk(userId);
 }
 
-async function setUserNickname(data) {
+async function setUserNickname(data, userId) {
   return await User.update(
     { nickname: data.nickname },
     {
       where: {
-        userId: data.userId,
+        userId,
       },
     }
   );

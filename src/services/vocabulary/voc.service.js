@@ -52,7 +52,7 @@ async function getDaliyvoc(_, userId) {
 
     randomvoc.forEach((voc, idx) => {
       const groupIndex = Math.floor(idx / optionsNum);
-      const group = rtnvoc[groupIndex].dataValues;
+      const group = rtnvoc[groupIndex].dataValues || rtnvoc[groupIndex];
       const options = group.options || [];
       options.push(voc);
       group.options = options;
@@ -63,7 +63,7 @@ async function getDaliyvoc(_, userId) {
     }
     return rtnvoc;
   } catch (error) {
-    console.error("error");
+    console.error(error);
     throw error;
   }
 }
@@ -103,11 +103,16 @@ async function getDaliyvocUntested(userId) {
       },
     });
     return {
-      data: result.filter((item) => item.dataValues.corrected == null),
+      data: result
+        .filter((item) => item.dataValues.corrected == null)
+        .map((item) => {
+          const { corrected, ...newItem } = item.dataValues;
+          return newItem;
+        }),
       fullQuota: !!result.length,
     };
   } catch (error) {
-    console.error("error");
+    console.error(error);
     throw error;
   }
 }

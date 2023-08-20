@@ -27,7 +27,7 @@ async function addvoc(data, userId) {
 
     return created;
   } catch (error) {
-    console.error("error");
+    console.error(error);
     throw error;
   }
 }

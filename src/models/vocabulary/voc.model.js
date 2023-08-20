@@ -32,6 +32,7 @@ const Voc = sequelize.define(
     },
   },
   {
+    freezeTableName: true,
     timestamps: false,
   }
 );

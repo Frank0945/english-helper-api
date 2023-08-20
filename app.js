@@ -46,6 +46,6 @@ app.use((err, req, res, next) => {
   res.status(500).json(err);
 });
 
-app.listen(process.env.HOST_POST, () => {
-  console.log(`Listening on port ${process.env.HOST_POST}`);
+app.listen(process.env.HOST_PORT, () => {
+  console.log(`Listening on port ${process.env.HOST_PORT}`);
 });

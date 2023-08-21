@@ -1,6 +1,6 @@
 /* eslint-disable space-before-function-paren */
 
-function controller(fun, useReqSessionUserId = true) {
+function controller(fun, useReqSessionUserId = false) {
   return async (req, res, next) => {
     const needQuery = req.method === "GET" || req.method === "DELETE";
     try {

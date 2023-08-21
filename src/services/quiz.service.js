@@ -92,6 +92,7 @@ async function createQuiz(data, userId) {
     });
 
     const cQuestions = data.quizzes.flatMap((quiz, idx) => {
+      console.log(quiz);
       return quiz.questions.map((row, qNumber) => {
         return {
           articleId: articleIds[idx],

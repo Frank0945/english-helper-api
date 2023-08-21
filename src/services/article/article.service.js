@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 const { createQuiz } = require("../quiz.service");
 const { callGPT } = require("./chatGPT.service");
 
@@ -15,12 +16,12 @@ async function generateArticle(data, userId) {
 
     const articles = [];
 
-    generatedArticles.forEach((s) => {
+    generatedArticles.forEach((s, idx) => {
       const obj = { quiz: {}, questions: [] };
       s = s.replace(/(\n|\r|\r\n|↵)/g, "");
-      obj.quiz.voc = s.split("[voc]")[1].split("[title]")[0].trim();
       obj.quiz.title = s.split("[title]")[1].split("[content]")[0].trim();
       obj.quiz.content = s.split("[content]")[1].split("[q1]")[0].trim();
+      obj.quiz.voc = data.voc[idx].join(", ");
 
       for (let i = 1; i < 6; i++) {
         obj.questions.push({});
@@ -29,13 +30,12 @@ async function generateArticle(data, userId) {
           .split("[option1]")[0]
           .trim();
         for (let j = 1; j < 5; j++) {
-          const endSplit = j === 4 ? "[correct]" : `[option${j + 1}]`; // 二元
+          const endSplit = j === 4 ? "[correct]" : `[option${j + 1}]`;
           obj.questions[i - 1]["option" + j] = s
             .split(`[option${j}]`)[1]
             .split(endSplit)[0]
             .trim();
         }
-
         obj.questions[i - 1].correct =
           i === 5
             ? s.split(`[q${i}]`)[1].split("[correct]")[1].trim()

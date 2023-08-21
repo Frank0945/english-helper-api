@@ -9,7 +9,6 @@ async function callGPT(voc) {
   Suitable for Taiwan college students reading.
   Generate 5 multiple-choice questions and base on article, 4 options for each question, and require correct answers(should be 1, 2, 3 or 4, only and always give number).
   Strictly abide by the following format rules below (brackets must exist, never add numbers or letters for options text), don't give me any suggestion: 
-  [voc]${voc}
   [title]Generated title
   [content]Generated article
   [q1]question title

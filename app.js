@@ -32,7 +32,7 @@ const articleRouter = require("./src/routes/article.route");
 const quizRouter = require("./src/routes/quiz.route");
 
 app.use("/user", userRouter);
-app.use("/badge", badgeRouter);
+app.use("/user/badge", badgeRouter);
 app.use("/voc", vocRouter);
 app.use("/voc/history", vocHistoryRouter);
 app.use("/article", articleRouter);

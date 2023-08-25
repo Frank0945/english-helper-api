@@ -17,7 +17,7 @@ function passportSetup(app) {
       if (err) {
         return next(err);
       }
-      res.redirect(process.env.CLIENT_URL);
+      res.redirect(process.env.CLIENT_URL + "/login");
     });
   });
 

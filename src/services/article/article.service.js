@@ -3,12 +3,12 @@ const { createQuiz } = require("../quiz.service");
 const { callGPT } = require("./chatGPT.service");
 
 /**
- * @param {{ voc: Array<Array<string>> }} data
+ * @param { Array<Array<string>> } data
  */
 async function generateArticle(data, userId) {
   try {
     const promises = [];
-    data.voc.forEach((element) => {
+    data.forEach((element) => {
       promises.push(callGPT(element.join(", ")));
     });
 
@@ -21,7 +21,7 @@ async function generateArticle(data, userId) {
       s = s.replace(/(\n|\r|\r\n|↵)/g, "");
       obj.quiz.title = s.split("[title]")[1].split("[content]")[0].trim();
       obj.quiz.content = s.split("[content]")[1].split("[q1]")[0].trim();
-      obj.quiz.voc = data.voc[idx].join(", ");
+      obj.quiz.voc = data[idx].join(", ");
 
       for (let i = 1; i < 6; i++) {
         obj.questions.push({});

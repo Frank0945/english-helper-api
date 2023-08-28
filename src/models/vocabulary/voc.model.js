@@ -25,6 +25,10 @@ const Voc = sequelize.define(
       type: DataTypes.BOOLEAN,
       zeroFill: true,
     },
+    addFromDaily: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

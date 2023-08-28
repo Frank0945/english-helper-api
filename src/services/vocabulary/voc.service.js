@@ -61,7 +61,7 @@ async function getDaliyvoc(_, userId) {
     if (needUpload) {
       await addDaliyVoc(rtnvoc, userId);
     }
-    return rtnvoc;
+    return { voc: rtnvoc, vocPerDay };
   } catch (error) {
     console.error(error);
     throw error;
@@ -96,7 +96,8 @@ async function getDaliyvocUntested(userId) {
           [Op.in]: sequelize.literal(
             `(SELECT vocId FROM vocabulary WHERE
                userId = ${userId} AND 
-               createdAt > FROM_UNIXTIME(${TODAY_START / 1000})
+               createdAt > FROM_UNIXTIME(${TODAY_START / 1000}) AND 
+               addFromDaily = true
             )`
           ),
         },
@@ -122,6 +123,7 @@ async function addDaliyVoc(data, userId) {
     return {
       userId,
       vocId: row.vocId,
+      addFromDaily: true,
       createdAt: sequelize.literal("NOW()"),
     };
   });
@@ -180,7 +182,7 @@ async function listIsUsed(data, userId) {
 }
 
 async function listIsMarked(data, userId) {
-  return await listByRule(userId, data || 0, "marked = 1");
+  return await listByRule(userId, data.cursor || 0, "marked = 1");
 }
 
 /**

@@ -14,7 +14,7 @@ const Voc = sequelize.define(
       primaryKey: true,
       allowNull: false,
     },
-    corrected: {
+    correct: {
       type: DataTypes.BOOLEAN,
     },
     marked: {

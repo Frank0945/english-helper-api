@@ -17,11 +17,11 @@ async function generateArticle(data, userId) {
     const articles = [];
 
     generatedArticles.forEach((s, idx) => {
-      const obj = { quiz: {}, questions: [] };
-      s = s.replace(/(\n|\r|\r\n|↵)/g, "");
-      obj.quiz.title = s.split("[title]")[1].split("[content]")[0].trim();
-      obj.quiz.content = s.split("[content]")[1].split("[q1]")[0].trim();
-      obj.quiz.voc = data[idx].join(", ");
+      const obj = { questions: [] };
+      // s = s.replace(/(\n|\r|\r\n|↵)/g, "");
+      obj.title = s.split("[title]")[1].split("[content]")[0].trim();
+      obj.content = s.split("[content]")[1].split("[q1]")[0].trim();
+      obj.voc = data[idx].join(", ");
 
       for (let i = 1; i < 6; i++) {
         obj.questions.push({});
@@ -38,20 +38,26 @@ async function generateArticle(data, userId) {
         }
         obj.questions[i - 1].correct =
           i === 5
-            ? s.split(`[q${i}]`)[1].split("[correct]")[1].trim()
-            : s
-                .split(`[q${i}]`)[1]
-                .split("[correct]")[1]
-                .split(`[q${i + 1}]`)[0]
-                .trim();
+            ? Number(s.split(`[q${i}]`)[1].split("[correct]")[1].trim())
+            : Number(
+                s
+                  .split(`[q${i}]`)[1]
+                  .split("[correct]")[1]
+                  .split(`[q${i + 1}]`)[0]
+                  .trim()
+              );
       }
 
       articles.push(obj);
     });
 
-    console.log(articles);
-
-    await createQuiz({ quizzes: articles }, userId);
+    const qIds = await createQuiz(articles, userId);
+    articles.forEach((article) => {
+      article.questions = article.questions.map((q) => ({
+        qId: qIds.shift(),
+        ...q,
+      }));
+    });
     return articles;
   } catch (error) {
     console.error(error);

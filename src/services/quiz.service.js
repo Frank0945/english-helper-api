@@ -42,8 +42,9 @@ async function listQuizzes(_, userId) {
               "CASE WHEN questions.choice = questions.correct THEN 1 ELSE 0 END"
             )
           ),
-          "corrected",
+          "correct",
         ],
+        "createdAt",
       ],
       order: [["articleId", "DESC"]],
       group: ["quizzes.articleId"],
@@ -56,11 +57,9 @@ async function listQuizzes(_, userId) {
 
 /**
  * @param {Array<{
- *  quiz: {
- *    voc: string,
- *    title: string,
- *    content: string,
- *  },
+ *  voc: string,
+ *  title: string,
+ *  content: string,
  *  questions: Array<{
  *    question: string,
  *    option1: string,
@@ -70,16 +69,18 @@ async function listQuizzes(_, userId) {
  *    correct: number,
  *    choice: number,
  * }>
- * }>} quizzes
+ * }>} data
  */
 async function createQuiz(data, userId) {
   const t = await sequelize.transaction();
 
   try {
-    const cQuiz = data.quizzes.map((row) => {
+    const cQuiz = data.map((row) => {
       return {
         userId,
-        ...row.quiz,
+        title: row.title,
+        content: row.content,
+        voc: row.voc,
       };
     });
 
@@ -91,7 +92,7 @@ async function createQuiz(data, userId) {
       articleIds.push(q.dataValues.articleId);
     });
 
-    const cQuestions = data.quizzes.flatMap((quiz, idx) => {
+    const cQuestions = data.flatMap((quiz, idx) => {
       console.log(quiz);
       return quiz.questions.map((row, qNumber) => {
         return {
@@ -102,9 +103,17 @@ async function createQuiz(data, userId) {
       });
     });
 
-    await QuizQuestions.bulkCreate(cQuestions, { transaction: t });
+    const quizQuestionsRtn = await QuizQuestions.bulkCreate(cQuestions, {
+      transaction: t,
+    });
+
+    const qIds = [];
+    quizQuestionsRtn.forEach((q) => {
+      qIds.push(q.dataValues.qId);
+    });
+
     await t.commit();
-    return true;
+    return qIds;
   } catch (error) {
     console.error(error);
     await t.rollback();
@@ -116,12 +125,12 @@ async function createQuiz(data, userId) {
  * @param {Array<{
  *   qId: string,
  *   choice: number
- * }>} quizzes
+ * }>} data
  */
 async function updateQuizChoice(data, userId) {
   const t = await sequelize.transaction();
   try {
-    for (const update of data.quizzes) {
+    for (const update of data) {
       await QuizQuestions.update(
         { choice: update.choice },
         {
@@ -142,15 +151,21 @@ async function updateQuizChoice(data, userId) {
 }
 
 async function cancelQuiz(data) {
-  await Quiz.destroy({
-    where: {
-      articleId: data.articleId,
-    },
-  });
+  try {
+    return await Quiz.destroy({
+      where: {
+        articleId: data.articleId,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 }
 
 async function limitQuizAmount(userId, t) {
-  const query = `
+  try {
+    const query = `
     DELETE FROM quizzes
     WHERE userId = ${userId} AND articleId IN (
       SELECT articleId
@@ -162,26 +177,38 @@ async function limitQuizAmount(userId, t) {
       WHERE row_num > ${maxQuizAmount}
     );
   `;
-  await sequelize.query(query, { transaction: t });
+    return await sequelize.query(query, { transaction: t });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 }
 
 async function getQuizById(data) {
-  return await Quiz.findOne({
-    where: {
-      articleId: data.articleId,
-    },
-    attributes: {
-      exclude: ["articleId", "userId"],
-    },
-    include: {
-      model: QuizQuestions,
-      findAll: true,
-      attributes: {
-        exclude: ["articleId", "qNumber"],
+  try {
+    return await Quiz.findOne({
+      where: {
+        articleId: data.articleId,
       },
-    },
-    order: [[QuizQuestions, "qNumber", "ASC"]],
-  });
+      attributes: {
+        exclude: ["userId", "createdAt"],
+      },
+      include: [
+        {
+          model: QuizQuestions,
+          as: "questions",
+          findAll: true,
+          attributes: {
+            exclude: ["articleId", "qNumber"],
+          },
+          order: ["qNumber", "ASC"],
+        },
+      ],
+    });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 }
 
 module.exports = {

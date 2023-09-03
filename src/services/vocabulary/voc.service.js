@@ -18,7 +18,7 @@ async function getDaliyvoc(_, userId) {
         where: {
           vocId: {
             [Op.notIn]: sequelize.literal(
-              `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND corrected IS NOT NULL)`
+              `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND correct IS NOT NULL)`
             ),
           },
         },
@@ -85,9 +85,9 @@ async function getDaliyvocUntested(userId) {
           ],
           [
             sequelize.literal(
-              "(SELECT corrected FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)"
+              "(SELECT correct FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)"
             ),
-            "corrected",
+            "correct",
           ],
         ],
       },
@@ -105,9 +105,9 @@ async function getDaliyvocUntested(userId) {
     });
     return {
       data: result
-        .filter((item) => item.dataValues.corrected == null)
+        .filter((item) => item.dataValues.correct == null)
         .map((item) => {
-          const { corrected, ...newItem } = item.dataValues;
+          const { correct, ...newItem } = item.dataValues;
           return newItem;
         }),
       fullQuota: !!result.length,
@@ -132,9 +132,9 @@ async function addDaliyVoc(data, userId) {
   });
 }
 
-async function setCorrected(data, userId) {
+async function setcorrect(data, userId) {
   return await Voc.update(
-    { corrected: data.corrected },
+    { correct: data.correct },
     {
       where: {
         userId,
@@ -207,7 +207,7 @@ async function listByRule(userId, cursor = 0, rule, ruleType = Op.in) {
 
 module.exports = {
   getDaliyvoc,
-  setCorrected,
+  setcorrect,
   setMarked,
   setIsUsed,
   listIsUsed,

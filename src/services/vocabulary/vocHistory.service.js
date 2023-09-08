@@ -4,16 +4,22 @@ const sequelize = require("../_db.service").sequelize;
 const maxVocAmount = 20;
 
 async function listHistoryvoc(_, userId) {
-  return await vocHistory.findAll({
-    where: { userId },
-    order: [["createdAt", "DESC"]],
-    attributes: ["voc"],
-  });
+  try {
+    const results = await vocHistory.findAll({
+      where: { userId },
+      order: [["createdAt", "DESC"]],
+      attributes: ["voc"],
+    });
+    return results.map((result) => result.voc);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 async function addvoc(data, userId) {
   try {
-    const cData = data.voc.map((voc) => {
+    const cData = data.map((voc) => {
       return {
         userId,
         voc,
@@ -54,9 +60,14 @@ async function limitVocAmount(userId) {
 }
 
 async function removeVoc(data, userId) {
-  return await vocHistory.destroy({
-    where: { userId, voc: data.voc },
-  });
+  try {
+    return await vocHistory.destroy({
+      where: { userId, voc: data.voc },
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 module.exports = {

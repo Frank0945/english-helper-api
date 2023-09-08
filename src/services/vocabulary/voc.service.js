@@ -18,7 +18,7 @@ async function getDaliyvoc(_, userId) {
         where: {
           vocId: {
             [Op.notIn]: sequelize.literal(
-              `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND correct IS NOT NULL)`
+              `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND correct IS NOT NULL)`,
             ),
           },
         },
@@ -26,7 +26,7 @@ async function getDaliyvoc(_, userId) {
           include: [
             [
               sequelize.literal(
-                "(SELECT marked FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)"
+                "(SELECT marked FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)",
               ),
               "marked",
             ],
@@ -79,13 +79,13 @@ async function getDaliyvocUntested(userId) {
         include: [
           [
             sequelize.literal(
-              "(SELECT marked FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)"
+              "(SELECT marked FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)",
             ),
             "marked",
           ],
           [
             sequelize.literal(
-              "(SELECT correct FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)"
+              "(SELECT correct FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)",
             ),
             "correct",
           ],
@@ -98,7 +98,7 @@ async function getDaliyvocUntested(userId) {
                userId = ${userId} AND 
                createdAt > FROM_UNIXTIME(${TODAY_START / 1000}) AND 
                addFromDaily = true
-            )`
+            )`,
           ),
         },
       },
@@ -119,70 +119,113 @@ async function getDaliyvocUntested(userId) {
 }
 
 async function addDaliyVoc(data, userId) {
-  data = data.map((row) => {
-    return {
-      userId,
-      vocId: row.vocId,
-      addFromDaily: true,
-      createdAt: sequelize.literal("NOW()"),
-    };
-  });
-  return await Voc.bulkCreate(data, {
-    updateOnDuplicate: ["createdAt"],
-  });
+  try {
+    data = data.map((row) => {
+      return {
+        userId,
+        vocId: row.vocId,
+        addFromDaily: true,
+        createdAt: sequelize.literal("NOW()"),
+      };
+    });
+    return await Voc.bulkCreate(data, {
+      updateOnDuplicate: ["createdAt"],
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 async function setcorrect(data, userId) {
-  return await Voc.update(
-    { correct: data.correct },
-    {
-      where: {
-        userId,
-        vocId: data.vocId,
+  try {
+    return await Voc.update(
+      { correct: data.correct },
+      {
+        where: {
+          userId,
+          vocId: data.vocId,
+        },
       },
-    }
-  );
+    );
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 async function setMarked(data, userId) {
-  return await Voc.create(
-    { userId, vocId: data.vocId, marked: data.marked },
-    {
-      updateOnDuplicate: ["marked"],
-    }
-  );
+  try {
+    return await Voc.create(
+      { userId, vocId: data.vocId, marked: data.marked },
+      {
+        updateOnDuplicate: ["marked"],
+      },
+    );
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 async function setIsUsed(data, userId) {
-  return await Voc.create(
-    { userId, vocId: data.vocId, used: true },
-    {
+  try {
+    data = data.map((vocId) => {
+      return {
+        userId,
+        vocId,
+        used: true,
+      };
+    });
+    return await Voc.bulkCreate(data, {
       updateOnDuplicate: ["used"],
-    }
-  );
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 /**
  * Will **not return** the voc that have been marked
  */
 async function listNotUsed(data, userId) {
-  return await listByRule(
-    userId,
-    data.cursor || 0,
-    "used = 1 OR marked = 1",
-    Op.notIn
-  );
+  try {
+    return await listByRule(
+      userId,
+      data.cursor || 0,
+      "used = 1 OR marked = 1",
+      Op.notIn,
+    );
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 /**
  * Will **not return** the voc that have been marked
  */
 async function listIsUsed(data, userId) {
-  return await listByRule(userId, data.cursor || 0, "used = 1 AND marked <> 1");
+  try {
+    return await listByRule(
+      userId,
+      data.cursor || 0,
+      "used = 1 AND marked <> 1",
+    );
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 async function listIsMarked(data, userId) {
-  return await listByRule(userId, data.cursor || 0, "marked = 1");
+  try {
+    return await listByRule(userId, data.cursor || 0, "marked = 1");
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
 /**
@@ -195,7 +238,7 @@ async function listByRule(userId, cursor = 0, rule, ruleType = Op.in) {
     where: {
       vocId: {
         [ruleType]: sequelize.literal(
-          `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND ${rule})`
+          `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND ${rule})`,
         ),
         [Op.gt]: cursor,
       },

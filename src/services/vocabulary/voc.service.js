@@ -18,7 +18,7 @@ async function getDaliyvoc(_, userId) {
         where: {
           vocId: {
             [Op.notIn]: sequelize.literal(
-              `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND correct IS NOT NULL)`,
+                            `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND correct IS NOT NULL)`,
             ),
           },
         },
@@ -94,7 +94,7 @@ async function getDaliyvocUntested(userId) {
       where: {
         vocId: {
           [Op.in]: sequelize.literal(
-            `(SELECT vocId FROM vocabulary WHERE
+                        `(SELECT vocId FROM vocabulary WHERE
                userId = ${userId} AND 
                createdAt > FROM_UNIXTIME(${TODAY_START / 1000}) AND 
                addFromDaily = true
@@ -137,17 +137,14 @@ async function addDaliyVoc(data, userId) {
   }
 }
 
-async function setcorrect(data, userId) {
+async function setCorrect(data, userId) {
   try {
-    return await Voc.update(
-      { correct: data.correct },
-      {
-        where: {
-          userId,
-          vocId: data.vocId,
-        },
+    return await Voc.update({ correct: data.correct }, {
+      where: {
+        userId,
+        vocId: data.vocId,
       },
-    );
+    });
   } catch (error) {
     console.error(error);
     throw error;
@@ -156,12 +153,9 @@ async function setcorrect(data, userId) {
 
 async function setMarked(data, userId) {
   try {
-    return await Voc.create(
-      { userId, vocId: data.vocId, marked: data.marked },
-      {
-        updateOnDuplicate: ["marked"],
-      },
-    );
+    return await Voc.create({ userId, vocId: data.vocId, marked: data.marked }, {
+      updateOnDuplicate: ["marked"],
+    });
   } catch (error) {
     console.error(error);
     throw error;
@@ -238,19 +232,21 @@ async function listByRule(userId, cursor = 0, rule, ruleType = Op.in) {
     where: {
       vocId: {
         [ruleType]: sequelize.literal(
-          `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND ${rule})`,
+                    `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND ${rule})`,
         ),
         [Op.gt]: cursor,
       },
     },
-    order: [["vocId", "ASC"]],
+    order: [
+      ["vocId", "ASC"]
+    ],
     limit: vocForChoice,
   });
 }
 
 module.exports = {
   getDaliyvoc,
-  setcorrect,
+  setCorrect,
   setMarked,
   setIsUsed,
   listIsUsed,

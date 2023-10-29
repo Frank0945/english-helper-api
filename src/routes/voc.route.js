@@ -4,7 +4,7 @@ const { controller } = require("../controllers/controllers");
 const voc = require("../services/vocabulary/voc.service");
 
 router.get("/daily", controller(voc.getDaliyvoc));
-router.put("/set/correct", controller(voc.setcorrect));
+router.put("/set/correct", controller(voc.setCorrect));
 router.post("/set/marked", controller(voc.setMarked));
 router.post("/set/isUsed", controller(voc.setIsUsed));
 router.get("/list/notUsed", controller(voc.listNotUsed));

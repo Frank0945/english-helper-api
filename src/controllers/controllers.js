@@ -1,9 +1,16 @@
 /* eslint-disable space-before-function-paren */
 
 function controller(fun, useReqSessionUserId = true) {
-  return async (req, res, next) => {
+  return async(req, res, next) => {
     const needQuery = req.method === "GET" || req.method === "DELETE";
+
     try {
+      if (useReqSessionUserId) {
+        if (!req.session.passport || !req.session.passport.user.userId) {
+          throw new Error("Unauthorized");
+        }
+      }
+
       res.json(
         await fun(
           needQuery ? req.query : req.body,
@@ -11,7 +18,7 @@ function controller(fun, useReqSessionUserId = true) {
         )
       );
     } catch (err) {
-      next(err);
+      res.status(401).json({ error: err.message });
     }
   };
 }

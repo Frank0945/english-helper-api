@@ -35,31 +35,30 @@ function passportSetup(app) {
 }
 
 passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.HOST_URL + "/auth/google/callback",
-    },
-    (accessToken, refreshToken, profile, done) => {
-      userService
-        .getUserInfo(profile.id)
-        .then((result) => {
-          if (result === null) {
-            userService.setUserInfo({
-              userId: profile.id,
-              email: profile.emails[0].value,
-              nickname: profile.displayName,
-              imageUrl: profile.photos[0].value,
-            });
-          }
-          const userData = result ? setUserInfo(result) : setUserInfo(profile);
-          return done(null, userData);
-        })
-        .catch((err) => {
-          return done(err);
-        });
-    }
+  new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.HOST_URL + "/auth/google/callback",
+  },
+  (accessToken, refreshToken, profile, done) => {
+    userService
+      .getUserInfo(profile.id)
+      .then((result) => {
+        if (result === null) {
+          userService.setUserInfo({
+            userId: profile.id,
+            email: profile.emails[0].value,
+            nickname: profile.displayName,
+            imageUrl: profile.photos[0].value,
+          });
+        }
+        const userData = result ? setUserInfo(result) : setUserInfo(profile);
+        return done(null, userData);
+      })
+      .catch((err) => {
+        return done(err);
+      });
+  }
   )
 );
 
@@ -68,7 +67,6 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((user, done) => {
-  // console.log("deserializeUser", user);
   done(null, user);
 });
 

@@ -7,6 +7,9 @@ function middlewareSetup(app) {
       secret: process.env.GOOGLE_CLIENT_SECRET,
       resave: false,
       saveUninitialized: false,
+      cookie: {
+        domain: process.env.CLIENT_DOMAIN,
+      }
     })
   );
 }

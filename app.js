@@ -49,3 +49,5 @@ app.use((err, req, res, next) => {
 app.listen(process.env.HOST_PORT, () => {
   console.log(`Listening on port ${process.env.HOST_PORT}`);
 });
+
+module.exports = app;

@@ -32,6 +32,7 @@ async function generateArticle(data, userId) {
         for (let j = 1; j < 5; j++) {
           const endSplit = j === 4 ? "[correct]" : `[option${j + 1}]`;
           obj.questions[i - 1]["option" + j] = s
+            .split(`[q${i}]`)[1]
             .split(`[option${j}]`)[1]
             .split(endSplit)[0]
             .trim();
@@ -44,7 +45,7 @@ async function generateArticle(data, userId) {
                   .split(`[q${i}]`)[1]
                   .split("[correct]")[1]
                   .split(`[q${i + 1}]`)[0]
-                  .trim()
+                  .trim(),
               );
       }
 

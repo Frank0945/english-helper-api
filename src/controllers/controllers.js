@@ -1,7 +1,7 @@
 /* eslint-disable space-before-function-paren */
 
 function controller(fun, useReqSessionUserId = true) {
-  return async(req, res, next) => {
+  return async (req, res, next) => {
     const needQuery = req.method === "GET" || req.method === "DELETE";
 
     try {
@@ -14,11 +14,14 @@ function controller(fun, useReqSessionUserId = true) {
       res.json(
         await fun(
           needQuery ? req.query : req.body,
-          useReqSessionUserId ? req.session.passport.user.userId : "1"
-        )
+          useReqSessionUserId ? req.session.passport.user.userId : "1",
+        ),
       );
     } catch (err) {
-      res.status(401).json({ error: err.message });
+      if (err.message === "Unauthorized") {
+        return res.status(401).json({ error: err.message });
+      }
+      next(err);
     }
   };
 }

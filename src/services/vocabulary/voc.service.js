@@ -36,13 +36,11 @@ async function getDaliyvoc(_, userId) {
         limit: vocPerDay,
       });
     }
-    console.log(rtnvoc);
 
     if (!rtnvoc) {
       return [];
     }
     const rtnvocIdsSet = new Set(rtnvoc.map((row) => row.vocId));
-    console.log(rtnvocIdsSet);
     const randomvoc = await RegularVoc.findAll({
       where: {
         vocId: {

@@ -11,7 +11,7 @@ app.use(
   cors({
     origin: process.env.CLIENT_URL,
     credentials: true,
-  })
+  }),
 );
 
 middlewareSetup(app);
@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
     extended: true,
-  })
+  }),
 );
 
 const userRouter = require("./src/routes/user.route");
@@ -43,7 +43,11 @@ app.get("/", (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(500).json(err);
+  res
+    .status(500)
+    .json(
+      err instanceof Error ? { error: err.message } : { error: err.toString() },
+    );
 });
 
 app.listen(process.env.HOST_PORT, () => {

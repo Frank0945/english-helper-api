@@ -13,7 +13,7 @@ async function listQuizzes(_, userId) {
         userId,
         articleId: {
           [Op.in]: sequelize.literal(
-            "(SELECT DISTINCT articleId FROM quiz_questions WHERE choice IS NULL)"
+            "(SELECT DISTINCT articleId FROM quiz_questions WHERE choice IS NULL)",
           ),
         },
       },
@@ -39,8 +39,8 @@ async function listQuizzes(_, userId) {
           sequelize.fn(
             "SUM",
             sequelize.literal(
-              "CASE WHEN questions.choice = questions.correct THEN 1 ELSE 0 END"
-            )
+              "CASE WHEN questions.choice = questions.correct THEN 1 ELSE 0 END",
+            ),
           ),
           "correct",
         ],
@@ -93,7 +93,6 @@ async function createQuiz(data, userId) {
     });
 
     const cQuestions = data.flatMap((quiz, idx) => {
-      console.log(quiz);
       return quiz.questions.map((row, qNumber) => {
         return {
           articleId: articleIds[idx],
@@ -136,7 +135,7 @@ async function updateQuizChoice(data, userId) {
         {
           where: { qId: update.qId },
           transaction: t,
-        }
+        },
       );
     }
 
@@ -158,7 +157,7 @@ async function cancelQuiz(data) {
       },
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error;
   }
 }
@@ -179,7 +178,7 @@ async function limitQuizAmount(userId, t) {
   `;
     return await sequelize.query(query, { transaction: t });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error;
   }
 }
@@ -206,7 +205,7 @@ async function getQuizById(data) {
       ],
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error;
   }
 }

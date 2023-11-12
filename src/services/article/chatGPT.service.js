@@ -26,8 +26,7 @@ async function callGPT(voc) {
 
     return chatCompletion.data.choices[0].message.content;
   } catch (error) {
-    console.error("Error calling the API:", error);
-    throw error;
+    throw new Error("Error calling the API:", error);
   }
 }
 

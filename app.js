@@ -46,7 +46,9 @@ app.use((err, req, res, next) => {
   res
     .status(500)
     .json(
-      err instanceof Error ? { error: err.message } : { error: err.toString() },
+      err instanceof Error
+        ? { message: err.message }
+        : { message: err.toString(), errorUndefined: true },
     );
 });
 

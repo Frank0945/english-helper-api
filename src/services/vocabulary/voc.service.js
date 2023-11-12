@@ -64,8 +64,7 @@ async function getDaliyvoc(_, userId) {
     }
     return { voc: rtnvoc, vocPerDay };
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -114,8 +113,7 @@ async function getDaliyvocUntested(userId) {
       fullQuota: !!result.length,
     };
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -133,8 +131,7 @@ async function addDaliyVoc(data, userId) {
       updateOnDuplicate: ["createdAt"],
     });
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -150,8 +147,7 @@ async function setCorrect(data, userId) {
       },
     );
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -164,8 +160,7 @@ async function setMarked(data, userId) {
       },
     );
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -182,8 +177,7 @@ async function setIsUsed(data, userId) {
       updateOnDuplicate: ["used"],
     });
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -199,8 +193,7 @@ async function listNotUsed(data, userId) {
       Op.notIn,
     );
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -215,8 +208,7 @@ async function listIsUsed(data, userId) {
       "used = 1 AND marked <> 1",
     );
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -224,8 +216,7 @@ async function listIsMarked(data, userId) {
   try {
     return await listByRule(userId, data.cursor || 0, "marked = 1");
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 

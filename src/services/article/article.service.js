@@ -61,8 +61,7 @@ async function generateArticle(data, userId) {
     });
     return articles;
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 

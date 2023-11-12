@@ -50,8 +50,7 @@ async function listQuizzes(_, userId) {
       group: ["quizzes.articleId"],
     });
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -114,9 +113,8 @@ async function createQuiz(data, userId) {
     await t.commit();
     return qIds;
   } catch (error) {
-    console.error(error);
     await t.rollback();
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -157,8 +155,7 @@ async function cancelQuiz(data) {
       },
     });
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -178,8 +175,7 @@ async function limitQuizAmount(userId, t) {
   `;
     return await sequelize.query(query, { transaction: t });
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -205,8 +201,7 @@ async function getQuizById(data) {
       ],
     });
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 

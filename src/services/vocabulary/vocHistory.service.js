@@ -12,8 +12,7 @@ async function listHistoryvoc(_, userId) {
     });
     return results.map((result) => result.voc);
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -33,8 +32,7 @@ async function addvoc(data, userId) {
 
     return created;
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -54,8 +52,7 @@ async function limitVocAmount(userId) {
   `;
     await sequelize.query(query);
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 
@@ -65,8 +62,7 @@ async function removeVoc(data, userId) {
       where: { userId, voc: data.voc },
     });
   } catch (error) {
-    console.error(error);
-    throw error;
+    throw new Error(error);
   }
 }
 

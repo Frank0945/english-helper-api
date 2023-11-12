@@ -14,7 +14,7 @@ const User = sequelize.define(
       allowNull: false,
     },
     nickname: {
-      type: DataTypes.CHAR(100),
+      type: DataTypes.CHAR(50),
       allowNull: false,
     },
     imageUrl: {
@@ -29,7 +29,7 @@ const User = sequelize.define(
   },
   {
     timestamps: false,
-  }
+  },
 );
 
 module.exports = {

@@ -7,6 +7,7 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD,
   {
     dialect: "mariadb",
+    timezone: "+08:00", // 'Asia/Taipei
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     dialectOptions: {

@@ -6,8 +6,8 @@ const { Op } = require("sequelize");
 const maxQuizAmount = 20;
 
 async function listQuizzes(_, userId) {
-  /** Destroy the empty choices */
   try {
+    /** Destroy the empty choices */
     await Quiz.destroy({
       where: {
         userId,
@@ -46,7 +46,7 @@ async function listQuizzes(_, userId) {
         ],
         "createdAt",
       ],
-      order: [["articleId", "DESC"]],
+      order: [["createdAt", "DESC"]],
       group: ["quizzes.articleId"],
     });
   } catch (error) {

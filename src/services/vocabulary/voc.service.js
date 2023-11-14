@@ -79,13 +79,13 @@ async function getDaliyvocUntested(userId) {
         include: [
           [
             sequelize.literal(
-              "(SELECT marked FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)",
+              "(SELECT marked FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId LIMIT 1)",
             ),
             "marked",
           ],
           [
             sequelize.literal(
-              "(SELECT correct FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId)",
+              "(SELECT correct FROM vocabulary WHERE vocabulary.vocId = regular_vocabulary.vocId LIMIT 1)",
             ),
             "correct",
           ],
@@ -153,7 +153,7 @@ async function setCorrect(data, userId) {
 
 async function setMarked(data, userId) {
   try {
-    return await Voc.create(
+    return await Voc.bulkCreate(
       { userId, vocId: data.vocId, marked: data.marked },
       {
         updateOnDuplicate: ["marked"],

@@ -22,7 +22,7 @@ sequelize
     console.log("Connection has been established successfully.");
   })
   .catch((error) => {
-    throw new Error("Unable to connect to the database:", error);
+    return new Error("Unable to connect to the database:", error);
   });
 
 module.exports = {

@@ -5,7 +5,7 @@ const { Op } = require("sequelize");
 
 const vocPerDay = 10;
 const optionsNum = 3;
-const vocForChoice = 40;
+const vocForChoice = 70;
 
 async function getDaliyvoc(_, userId) {
   try {
@@ -190,6 +190,7 @@ async function listNotUsed(data, userId) {
       userId,
       data.cursor || 0,
       "used = 1 OR marked = 1",
+      data.vocStartingWith || "",
       Op.notIn,
     );
   } catch (error) {
@@ -206,6 +207,7 @@ async function listIsUsed(data, userId) {
       userId,
       data.cursor || 0,
       "used = 1 AND marked <> 1",
+      data.vocStartingWith || "",
     );
   } catch (error) {
     throw new Error(error);
@@ -214,7 +216,12 @@ async function listIsUsed(data, userId) {
 
 async function listIsMarked(data, userId) {
   try {
-    return await listByRule(userId, data.cursor || 0, "marked = 1");
+    return await listByRule(
+      userId,
+      data.cursor || 0,
+      "marked = 1",
+      data.vocStartingWith || "",
+    );
   } catch (error) {
     throw new Error(error);
   }
@@ -224,8 +231,15 @@ async function listIsMarked(data, userId) {
  * @param {number} cursor - the cursor of the last vocId in the last page
  * @param {string} rule - the SQL rule to filter the voc
  * @param {unique symbol} ruleType - the SQL rule type
+ * @param {string} vocStartingWith - the starting letter of the vocabulary, default is ""
  */
-async function listByRule(userId, cursor = 0, rule, ruleType = Op.in) {
+async function listByRule(
+  userId,
+  cursor = 0,
+  rule,
+  vocStartingWith = "",
+  ruleType = Op.in,
+) {
   return await RegularVoc.findAll({
     where: {
       vocId: {
@@ -233,6 +247,9 @@ async function listByRule(userId, cursor = 0, rule, ruleType = Op.in) {
           `(SELECT vocId FROM vocabulary WHERE userId = ${userId} AND ${rule})`,
         ),
         [Op.gt]: cursor,
+      },
+      vocabulary: {
+        [Op.like]: `${vocStartingWith}%`,
       },
     },
     order: [["vocId", "ASC"]],

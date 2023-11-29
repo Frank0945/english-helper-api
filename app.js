@@ -30,6 +30,7 @@ const vocRouter = require("./src/routes/voc.route");
 const vocHistoryRouter = require("./src/routes/vocHistory.route");
 const articleRouter = require("./src/routes/article.route");
 const quizRouter = require("./src/routes/quiz.route");
+const achievementRouter = require("./src/routes/achievement.route");
 
 app.use("/user", userRouter);
 app.use("/user/badge", badgeRouter);
@@ -37,6 +38,7 @@ app.use("/voc", vocRouter);
 app.use("/voc/history", vocHistoryRouter);
 app.use("/article", articleRouter);
 app.use("/quiz", quizRouter);
+app.use("/achievement", achievementRouter);
 
 app.get("/", (req, res) => {
   res.json({ status: "ok" });

@@ -2,10 +2,15 @@ const { AwardedBadge } = require("../models/badge/awardedBadge.model");
 const { Badges } = require("../models/badge/badges.model");
 
 async function awardedBadge(userId, badgeId) {
-  return await AwardedBadge.create({
-    userId,
-    badgeId,
-  });
+  return await AwardedBadge.bulkCreate(
+    {
+      userId,
+      badgeId,
+    },
+    {
+      updateOnDuplicate: ["badgeId"],
+    },
+  );
 }
 
 async function listBadgesByUserId(_, userId) {

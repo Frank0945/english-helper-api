@@ -1,18 +1,16 @@
-const {
-  Achievements,
-} = require("../../models/achievement/loginCount.model.js");
+const { LoginCounts } = require("../../models/achievement/loginCount.model.js");
 const { awardedBadge } = require("../badge.service.js");
 
 async function loginCount(_, userId) {
   try {
-    const result = await Achievements.findOne({
+    const result = await LoginCounts.findOne({
       where: {
         userId,
       },
     });
     const TODAY_START = new Date().setHours(0, 0, 0, 0);
     if (!result) {
-      return await Achievements.create({
+      return await LoginCounts.create({
         userId,
         loginCount: 1,
       });

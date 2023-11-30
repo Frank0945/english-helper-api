@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../../services/_db.service").sequelize;
 
-const Achievements = sequelize.define("achievements", {
+const LoginCounts = sequelize.define("login_counts", {
   userId: {
     type: DataTypes.CHAR(30),
     primaryKey: true,
@@ -13,8 +13,8 @@ const Achievements = sequelize.define("achievements", {
   },
 });
 
-Achievements.sync().then(() => {});
+LoginCounts.sync().then(() => {});
 
 module.exports = {
-  Achievements,
+  LoginCounts,
 };

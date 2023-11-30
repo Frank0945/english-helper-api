@@ -2,24 +2,30 @@ const { AwardedBadge } = require("../models/badge/awardedBadge.model");
 const { Badges } = require("../models/badge/badges.model");
 
 async function awardedBadge(userId, badgeId) {
-  return await AwardedBadge.bulkCreate(
-    {
-      userId,
-      badgeId,
-    },
-    {
-      updateOnDuplicate: ["badgeId"],
-    },
-  );
+  try {
+    return await AwardedBadge.create(
+      {
+        userId,
+        badgeId,
+      },
+      { updateOnDuplicate: ["badgeId"] },
+    );
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 async function listBadgesByUserId(_, userId) {
-  return await AwardedBadge.findAll({
-    where: {
-      userId,
-    },
-    include: { model: Badges },
-  });
+  try {
+    return await AwardedBadge.findAll({
+      where: {
+        userId,
+      },
+      include: { model: Badges },
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
 }
 
 module.exports = {

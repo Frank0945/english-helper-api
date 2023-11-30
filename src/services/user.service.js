@@ -23,6 +23,31 @@ async function getUserInfo(userId) {
   }
 }
 
+async function getUserDetail(_, userId) {
+  try {
+    return await User.findByPk(userId, {
+      attributes: ["learningTime"],
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+async function incrementLearningTime(userId, add) {
+  try {
+    return await User.increment(
+      { learningTime: add },
+      {
+        where: {
+          userId,
+        },
+      },
+    );
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 async function setUserNickname(data, userId, sessionID) {
   try {
     await User.update(
@@ -67,5 +92,7 @@ async function updateToSession(nickname, sid) {
 module.exports = {
   setUserInfo,
   getUserInfo,
+  getUserDetail,
   setUserNickname,
+  incrementLearningTime,
 };

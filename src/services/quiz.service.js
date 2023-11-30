@@ -2,6 +2,7 @@ const { Quiz } = require("../models/quiz/quiz.model");
 const { QuizQuestions } = require("../models/quiz/quizQuestions.model");
 const sequelize = require("./_db.service").sequelize;
 const { Op } = require("sequelize");
+const { incrementLearningTime } = require("./user.service");
 
 const maxQuizAmount = 20;
 
@@ -119,15 +120,18 @@ async function createQuiz(data, userId) {
 }
 
 /**
- * @param {Array<{
- *   qId: string,
- *   choice: number
- * }>} data
+ * @param {{
+ *   ans: Array<{
+ *     qId: string,
+ *     choice: number
+ *   }>,
+ *   createdAt: number,
+ * }} data
  */
 async function updateQuizChoice(data, userId) {
   const t = await sequelize.transaction();
   try {
-    for (const update of data) {
+    for (const update of data.ans) {
       await QuizQuestions.update(
         { choice: update.choice },
         {
@@ -140,6 +144,12 @@ async function updateQuizChoice(data, userId) {
     await limitQuizAmount(userId, t);
 
     await t.commit();
+
+    const now = new Date().getTime();
+    const diffSec = Math.floor((now - data.createdAt) / 1000);
+
+    await incrementLearningTime(userId, diffSec);
+
     return true;
   } catch (error) {
     await t.rollback();

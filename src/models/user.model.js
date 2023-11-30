@@ -22,7 +22,7 @@ const User = sequelize.define(
       allowNull: false,
     },
     learningTime: {
-      type: DataTypes.INET(4),
+      type: DataTypes.INET(5),
       allowNull: true,
       zeroFill: true,
     },

@@ -22,6 +22,7 @@ async function generateArticle(data, userId) {
       obj.title = s.split("[title]")[1].split("[content]")[0].trim();
       obj.content = s.split("[content]")[1].split("[q1]")[0].trim();
       obj.voc = data[idx].join(", ");
+      obj.createdAt = new Date().getTime();
 
       for (let i = 1; i < 6; i++) {
         obj.questions.push({});
